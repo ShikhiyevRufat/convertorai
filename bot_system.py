@@ -43,7 +43,18 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     elif query.data == 'convert_document':
         pass
     elif query.data == 'instagram_download':
-        pass
+        # Present the choice between downloading Reels or Posts
+        keyboard = [
+            [InlineKeyboardButton("Reels", callback_data='instagram_reels')],
+            [InlineKeyboardButton("Post", callback_data='instagram_post')]
+        ]
+        markup = InlineKeyboardMarkup(keyboard)
+        await query.edit_message_text("Please choose whether you want to download Reels or Post.", reply_markup=markup)
+    elif query.data == 'instagram_reels' or query.data == 'instagram_post':
+    # elif query.data in ['instagram_reels', 'instagram_post']:
+        user_state[query.from_user.id] = query.data  # Store the user's choice (Reels or Post)
+        await query.edit_message_text("Please send the Instagram URL.")
+
     elif query.data == 'generate_qr':
         user_state[query.from_user.id] = 'awaiting_qr_input'
         await query.edit_message_text("Please enter the text or URL for the QR code.")
@@ -92,6 +103,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             user_state[user_id] = 'awaiting_format_selection'
         else:
             await update.message.reply_text("Please upload an image.")
+
+
+    elif user_state.get(user_id) in ['instagram_reels', 'instagram_post']:
+        url = update.message.text
+        if user_state[user_id] == 'instagram_reels':
+            # Call the Instagram downloader for Reels
+            filepath = instagram_downloander(url, 'reels')
+        else:
+            # Call the Instagram downloader for Posts
+            filepath = instagram_downloander(url, 'post')
+
+        #     content_type = 'reels' if user_state[user_id] == 'instagram_reels' else 'post'
+        # filepath = instagram_downloander(url, content_type)
+
+        if filepath and os.path.exists(filepath):
+            with open(filepath, 'rb') as file:
+                await update.message.reply_document(document=file, filename=os.path.basename(filepath))
+            await update.message.reply_text(f"Download successful: {filepath}")
+        else:
+            await update.message.reply_text("Failed to download the Instagram content.")
+        user_state[user_id] = None
             
     elif user_state.get(user_id) == 'awaiting_youtube_url':
         url = update.message.text
