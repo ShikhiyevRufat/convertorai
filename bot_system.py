@@ -122,7 +122,7 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             if filepath and os.path.exists(filepath):
                 with open(filepath, 'rb') as file:
                     await query.edit_message_text("MP3 conversion successful. Download your file:")
-                    await query.message.reply_document(document=file, filename=f"converted.mp3")
+                    await query.message.reply_document(document=file, filename="converted.mp3")
             else:
                 await query.edit_message_text("Failed to convert to MP3.")
             user_state[user_id] = None
@@ -130,9 +130,9 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
         else:
             await query.edit_message_text("No YouTube URL received.")
     elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
-        # Image conversion logic
+
         input_image = BytesIO(user_images[user_id])
-        output_format = query.data.split('_')[1]  # Extract format (png, jpeg, etc.)
+        output_format = query.data.split('_')[1]  
         output_image = BytesIO()  
         error_message = convert_image(input_image, output_image, output_format)
 
@@ -149,6 +149,7 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
         await query.edit_message_text("Please upload an image first.")
 
 
+
 async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
@@ -160,7 +161,7 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
             await query.edit_message_text("No YouTube URL received.")
             return
 
-        resolution = query.data.split('_')[1]  # Extract the resolution (360p, 720p, etc.)
+        resolution = query.data.split('_')[1]  
         filepath = youtube_downloander(url, 'mp4', resolution)
         
         if filepath and os.path.exists(filepath):
