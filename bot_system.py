@@ -14,7 +14,7 @@ TOKEN = '7503452735:AAHe7RPN_9GpaVWU4JYjmKG68Boq39hDljM'
 
 user_state = {}
 user_images = {}  
-user_youtube_urls = {}  
+user_youtube_urls = {} 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
@@ -120,17 +120,25 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
         if url:
             filepath = youtube_downloander(url, 'mp3')
             if filepath and os.path.exists(filepath):
-                with open(filepath, 'rb') as file:
-                    await query.edit_message_text("MP3 conversion successful. Download your file:")
-                    await query.message.reply_document(document=file, filename="converted.mp3")
+                try:
+                    with open(filepath, 'rb') as file:
+                        await context.bot.send_audio(chat_id=query.message.chat_id, audio=file, title="Converted MP3")
+                    await query.edit_message_text(f"Download successful: {filepath}")
+                except Exception as e:
+                    print(f"Error sending MP3 file: {e}")
+                    await query.edit_message_text("Failed to send MP3 file.")
+                finally:
+                    os.remove(filepath)  
             else:
                 await query.edit_message_text("Failed to convert to MP3.")
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
         else:
             await query.edit_message_text("No YouTube URL received.")
-    elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
 
+
+            
+    elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
         input_image = BytesIO(user_images[user_id])
         output_format = query.data.split('_')[1]  
         output_image = BytesIO()  
@@ -140,15 +148,12 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             await query.edit_message_text(f"Error: {error_message}")
         else:
             output_image.seek(0)
-            await query.edit_message_text("Image conversion successful. Download your file:")
-            await query.message.reply_document(document=output_image, filename=f"converted.{output_format}")
+            await context.bot.send_document(chat_id=query.message.chat_id, document=output_image, filename=f"converted.{output_format}")
 
         user_state[user_id] = None
         user_images.pop(user_id, None)
     else:
         await query.edit_message_text("Please upload an image first.")
-
-
 
 async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -161,23 +166,26 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
             await query.edit_message_text("No YouTube URL received.")
             return
 
-        resolution = query.data.split('_')[1]  
-        filepath = youtube_downloander(url, 'mp4', resolution)
-        
-        if filepath and os.path.exists(filepath):
-            with open(filepath, 'rb') as file:
-                await query.message.reply_document(document=file, filename=os.path.basename(filepath))
-            await query.edit_message_text(f"Download successful: {filepath}")
-        else:
-            await query.edit_message_text("Failed to download the video.")
-        
+        if query.data.startswith('quality_'):
+            resolution = query.data.split('_')[1]
+            filepath = youtube_downloander(url, 'mp4', resolution)
+            if filepath and os.path.exists(filepath):
+                try:
+                    with open(filepath, 'rb') as file:
+                        await context.bot.send_video(chat_id=query.message.chat_id, video=file)
+                    await query.edit_message_text(f"Download successful: {filepath}")
+                except Exception as e:
+                    print(f"Error sending MP4 file: {e}")
+                    await query.edit_message_text("Failed to send MP4 file.")
+                finally:
+                    os.remove(filepath)  
+            else:
+                await query.edit_message_text("Failed to download the video.")
         user_state[user_id] = None
         user_youtube_urls.pop(user_id, None)
+
     else:
         await query.edit_message_text("No YouTube URL received.")
-
-
-
 
 def main():
     application = Application.builder().token(TOKEN).read_timeout(60).build()

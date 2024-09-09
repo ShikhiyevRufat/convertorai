@@ -14,13 +14,8 @@ def youtube_downloander(url, format, resolution=None):
 
         if format == 'mp3':
             options.update({
-                'format': 'bestaudio/best',
-                'keepvideo': False,  
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
+                'format': 'bestaudio/best[ext=m4a]',
+                'keepvideo': False,
             })
         elif format == 'mp4':
             format_option = 'bestvideo+bestaudio'
