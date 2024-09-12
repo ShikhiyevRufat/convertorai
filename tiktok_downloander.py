@@ -1,6 +1,6 @@
 def tiktok_downloander():
     import pyktok as pyk
-    pyk.specify_browser('chrome')
+    pyk.specify_browser('edge')
 
     url = input("Add tiktok url:")
 
@@ -9,4 +9,4 @@ def tiktok_downloander():
     pyk.save_tiktok(url,
                 True,
                     'video_data.csv',
-            'chrome')
+            'edge')
