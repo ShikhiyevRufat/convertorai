@@ -28,10 +28,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     markup = InlineKeyboardMarkup(keyboard)
     
-    # await update.message.reply_text(
-    #     "Welcome! Which specialty do you want to use?",
-    #     reply_markup=markup
-    # )
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -50,16 +46,14 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         pass
 
     elif query.data == 'instagram_download':
-        # Present the choice between downloading Reels or Posts
+
         keyboard = [
-            [InlineKeyboardButton("Reels", callback_data='instagram_reels')],
-            [InlineKeyboardButton("Post", callback_data='instagram_post')]
+            [InlineKeyboardButton("Post or Reel", callback_data='instagram_post')]
         ]
         markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text("Please choose whether you want to download Reels or Post.", reply_markup=markup)
     elif query.data == 'instagram_reels' or query.data == 'instagram_post':
-    # elif query.data in ['instagram_reels', 'instagram_post']:
-        user_state[query.from_user.id] = query.data  # Store the user's choice (Reels or Post)
+        user_state[query.from_user.id] = query.data  
         await query.edit_message_text("Please send the Instagram URL.")
 
     elif query.data == 'generate_qr':
@@ -82,6 +76,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     if user_state.get(user_id) == 'awaiting_qr_input':
         text = update.message.text
+
+        await update.message.reply_text("Please wait 1 minute while your QR code is being processed...")
+        
         qr_code = qr_generate(text)  
         await update.message.reply_photo(photo=qr_code, caption="Here is your QR code.")
         user_state[user_id] = None
@@ -112,25 +109,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             await update.message.reply_text("Please upload an image.")
 
 
-    elif user_state.get(user_id) in ['instagram_reels', 'instagram_post']:
+    elif user_state.get(user_id) in 'instagram_post':
         url = update.message.text
-        if user_state[user_id] == 'instagram_reels':
-            # Call the Instagram downloader for Reels
-            filepath = instagram_downloander(url, 'reels')
-        else:
-            # Call the Instagram downloader for Posts
-            filepath = instagram_downloander(url, 'post')
+        content_type = 'post'
+        await update.message.reply_text("Please wait 1 minute for loading...")
+        
+        media, media_type = instagram_downloander(url, content_type)
 
-        #     content_type = 'reels' if user_state[user_id] == 'instagram_reels' else 'post'
-        # filepath = instagram_downloander(url, content_type)
-
-        if filepath and os.path.exists(filepath):
-            with open(filepath, 'rb') as file:
-                await update.message.reply_document(document=file, filename=os.path.basename(filepath))
-            await update.message.reply_text(f"Download successful: {filepath}")
+        if media and media_type:
+            if media_type == 'video':
+                await update.message.reply_video(video=media, filename='instagram_video.mp4')
+            elif media_type == 'image':
+                await update.message.reply_photo(photo=media, filename='instagram_image.jpg')
+            else:
+                await update.message.reply_text("Unsupported media type.")
+            await update.message.reply_text(f"Download successful!")
         else:
             await update.message.reply_text("Failed to download the Instagram content.")
         user_state[user_id] = None
+
+
+
             
     elif user_state.get(user_id) == 'awaiting_youtube_url':
         url = update.message.text
@@ -157,6 +156,8 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
     if user_state.get(user_id) == 'awaiting_youtube_selection' and query.data == 'format_mp3':
         url = user_youtube_urls.get(user_id)
         if url:
+            await query.edit_message_text("Please wait 1 minute while your MP3 is being processed...")
+
             filepath = youtube_downloander(url, 'mp3')
             if filepath and os.path.exists(filepath):
                 try:
@@ -178,6 +179,8 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
 
             
     elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
+        await query.edit_message_text("Please wait 1 minute while your image is being processed...")
+
         input_image = BytesIO(user_images[user_id])
         output_format = query.data.split('_')[1]  
         output_image = BytesIO()  
@@ -207,6 +210,9 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
         if query.data.startswith('quality_'):
             resolution = query.data.split('_')[1]
+
+            await query.edit_message_text("Please wait 1 minute while your video is being processed...")
+            
             filepath = youtube_downloander(url, 'mp4', resolution)
             if filepath and os.path.exists(filepath):
                 try:

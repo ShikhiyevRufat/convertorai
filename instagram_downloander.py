@@ -1,32 +1,38 @@
-def instagram_downloander(url, content_type):
-    import instaloader
-    import os
+import instaloader
+import requests
+from io import BytesIO
 
-    ig = instaloader.Instaloader()
-    shortcode = url.split('/')[-2]
-    download_path = "downloads"
-    os.makedirs(download_path, exist_ok=True)
+def instagram_downloander(url, content_type):
+    print(f"Content Type: {content_type}")
 
     try:
-        if content_type in ['post', 'reel']:
-            post = instaloader.Post.from_shortcode(ig.context, shortcode)
-            ig.download_post(post, target=download_path)
+        ig = instaloader.Instaloader()
 
-            files = [f for f in os.listdir(download_path) if f.startswith(shortcode) and (f.endswith('.jpg') or f.endswith('.mp4'))]
-            
-            if not files:
-                print("Failed to find the downloaded file.")
-                return None
+        shortcode = url.split('/')[-2]
+        post = instaloader.Post.from_shortcode(ig.context, shortcode)
 
-            # Return the first file (image or video)
-            return os.path.join(download_path, files[0])
+        if content_type == 'post' or content_type == 'reel':
+            if post.is_video:
+                video_url = post.video_url
+                response = requests.get(video_url)
+                if response.status_code == 200:
+                    return BytesIO(response.content), 'video'
+            else:
+                image_url = post.url
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    return BytesIO(response.content), 'image'
+
+            print("No media found.")
+            return None, None
+
         else:
             print("Invalid content type. Please enter 'post' or 'reel'.")
-            return None
+            return None, None
+
     except instaloader.exceptions.BadResponseException as e:
-        print(f"An error occurred while fetching post/reel metadata: {e}")
-        return None
+        print(f"An error occurred while fetching post metadata: {e}")
+        return None, None
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return None
-
+        return None, None
