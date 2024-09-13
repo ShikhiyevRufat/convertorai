@@ -1,13 +1,12 @@
-def document_convertor():
+def document_convertor(input_file, output_file):
     import subprocess
     import os
-    from PIL import Image
 
     LIBREOFFICE_PATH = r'C:\Program Files\LibreOffice\program\soffice.exe'  
 
     def convert_to_pdf(input_file, output_file):
         extension = os.path.splitext(input_file)[1].lower()
-        
+
         if extension in ['.docx', '.doc']:
             convert_word_to_pdf(input_file, output_file)
         elif extension in ['.xlsx', '.xls']:
@@ -51,9 +50,4 @@ def document_convertor():
         subprocess.run(command, check=True)
         print(f"Converted {input_file} to PDF and saved in {os.path.dirname(output_file)}.")
 
-    def convert_image_to_pdf(input_file, output_file):
-        with Image.open(input_file) as img:
-            img.convert('RGB').save(output_file, "PDF")
-        print(f"Converted {input_file} to PDF and saved as {output_file}.")
-
-    convert_to_pdf('my.pptx', 'output/output.pdf')
+    convert_to_pdf(input_file, output_file)
