@@ -8,3 +8,5 @@ def qr_generate(text: str):
     buffer.seek(0)
     
     return buffer.getvalue()
+
+
