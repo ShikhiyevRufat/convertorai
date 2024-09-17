@@ -3,37 +3,20 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 from PIL import Image
 from io import BytesIO
 import os
-from image_convertor import convert_image
-from document_convertor import document_convertor
-from instagram_downloander import instagram_downloander
-from qr_generate import qr_generate
-from tiktok_downloander import download_tiktok
-from youtube_downloander import youtube_downloander
-
-TOKEN = '7503452735:AAHe7RPN_9GpaVWU4JYjmKG68Boq39hDljM'
+from function.image_convertor import convert_image
+from function.document_convertor import document_convertor
+from function.instagram_downloander import instagram_downloander
+from function.qr_generate import qr_generate
+from function.tiktok_downloander import download_tiktok
+from function.youtube_downloander import youtube_downloander
+from user_credit import Credit
 
 user_state = {}
 user_images = {}
 user_youtube_urls = {}
 user_documents = {}
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    keyboard = [
-        [InlineKeyboardButton("🖼️ Convert Image", callback_data='convert_image')],
-        [InlineKeyboardButton("📄 Convert Document", callback_data='convert_document')],
-        [InlineKeyboardButton("📷 Instagram Download", callback_data='instagram_download')],
-        [InlineKeyboardButton("📲 Generate QR Code", callback_data='generate_qr')],
-        [InlineKeyboardButton("🎵 Tiktok Download", callback_data='tiktok_download')],
-        [InlineKeyboardButton("🎥 YouTube Download", callback_data='youtube_download')]
-    ]
-
-    markup = InlineKeyboardMarkup(keyboard)
-
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Welcome! Which specialty do you want to use?",
-        reply_markup=markup
-    )
+user_credits = {}
+INITIAL_CREDITS = 30
 
 
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -42,10 +25,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     if query.data == 'convert_image':
         user_state[query.from_user.id] = 'awaiting_image_upload'
-        await query.edit_message_text("Please upload the image you want to convert.")
+        await query.edit_message_text("Please upload the image you want to convert🖼️")
     elif query.data == 'convert_document':
         user_state[query.from_user.id] = 'awaiting_document_upload'
-        await query.edit_message_text("Please upload the document you want to convert to PDF.")
+        await query.edit_message_text("Please upload the document you want to convert to PDF📄")
 
     elif query.data == 'instagram_download':
 
@@ -53,22 +36,22 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             [InlineKeyboardButton("Post or Reel", callback_data='instagram_post')]
         ]
         markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text("Please choose whether you want to download Reels or Post.", reply_markup=markup)
+        await query.edit_message_text("Please choose whether you want to download Reels or Post📷", reply_markup=markup)
     elif query.data == 'instagram_reels' or query.data == 'instagram_post':
         user_state[query.from_user.id] = query.data  
         await query.edit_message_text("Please send the Instagram URL.")
 
     elif query.data == 'generate_qr':
         user_state[query.from_user.id] = 'awaiting_qr_input'
-        await query.edit_message_text("Please enter the text or URL for the QR code.")
+        await query.edit_message_text("Please enter the text or URL for the QR code📲")
 
     elif query.data == 'tiktok_download':
         user_state[query.from_user.id] = 'awaiting_tiktok_url'
-        await query.edit_message_text("Please send me the TikTok video URL.")
+        await query.edit_message_text("Please send me the TikTok video URL🎥")
 
     elif query.data == 'youtube_download':
         user_state[query.from_user.id] = 'awaiting_youtube_url'
-        await query.edit_message_text("Please send me the YouTube video URL.")
+        await query.edit_message_text("Please send me the YouTube video URL🎥")
 
     elif query.data.startswith('format_'):
         await handle_format_selection(update, context)
@@ -77,9 +60,30 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     else:
         await query.edit_message_text("This function is not available.")
 
+# async def check_credits(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+#     user_id = update.message.from_user.id
+#     Credit.add_user(user_id) 
+
+#     if Credit.get_credits(user_id) <= 0:
+#         await update.message.reply_text("😪You have no credits left. Please pay to continue using the bot.")
+#         return False
+
+#     return True
+
+# async def refill_credits(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+#     user_id = update.message.from_user.id
+#     Credit.reset_credits(user_id)
+#     await update.message.reply_text(f"Your credits have been refilled! 💎 You now have {Credit.INITIAL_CREDITS} credits.")
+
+
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
+
+    
+
+    # if not await check_credits(update, context):
+    #     return
 
     if user_state.get(user_id) == 'awaiting_tiktok_url':
         url = update.message.text
@@ -93,7 +97,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             with open(output_filename, 'rb') as video_file:
                 await context.bot.send_video(chat_id=update.effective_chat.id, video=video_file)
             os.remove(output_filename)  
-            await update.message.reply_text("Download successful! For using the bot again, please write /start.")
+            # Credit.deduct_credits(user_id, 1)
+            # await update.message.reply_text(f"🥳Download successful! \n💎 Your credits:  {Credit.get_credits(user_id)}/30 (+1) \nFor using the bot again, please write /start.")
+            await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
         except Exception as e:
             await update.message.reply_text(f"Error downloading video: {e}")
         user_state[user_id] = None
@@ -101,7 +107,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if user_state.get(user_id) == 'awaiting_qr_input':
         text = update.message.text
         qr_code = qr_generate(text)  
-        await update.message.reply_photo(photo=qr_code, caption="Here is your QR code. For using the bot again, please write /start.")
+        # Credit.deduct_credits(user_id, 1)
+        await update.message.reply_photo(photo=qr_code, caption=f"🎯Here is your QR code. \nFor using the bot again, please write /start.")
         user_state[user_id] = None
 
     elif user_state.get(user_id) == 'awaiting_image_upload':
@@ -112,14 +119,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             user_images[user_id] = photo
 
             keyboard = [
-                [InlineKeyboardButton("PNG", callback_data='format_png')],
-                [InlineKeyboardButton("JPEG", callback_data='format_jpeg')],
-                [InlineKeyboardButton("GIF", callback_data='format_gif')],
-                [InlineKeyboardButton("TIFF", callback_data='format_tiff')],
-                [InlineKeyboardButton("PDF", callback_data='format_pdf')],
-                [InlineKeyboardButton("AVIF", callback_data='format_avif')],
-                [InlineKeyboardButton("WEBP", callback_data='format_webp')],
+            [
+                InlineKeyboardButton("PNG", callback_data='format_png'),
+                InlineKeyboardButton("JPEG", callback_data='format_jpeg'),
+                InlineKeyboardButton("GIF", callback_data='format_gif')
+            ],
+            [
+                InlineKeyboardButton("TIFF", callback_data='format_tiff'),
+                InlineKeyboardButton("PDF", callback_data='format_pdf'),
+                InlineKeyboardButton("AVIF", callback_data='format_avif')
+            ],
+            [
+                InlineKeyboardButton("WEBP", callback_data='format_webp')
             ]
+        ]
+
             markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
                 "Which format do you want to convert the image to?",
@@ -152,8 +166,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
                 os.remove(input_file_path)
                 os.remove(output_file_path)
-
-                await update.message.reply_text("Document conversion successful! For using the bot again, please write /start.")
+                # Credit.deduct_credits(user_id, 1)
+                await update.message.reply_text(f"🥳Document convert is successful! \nFor using the bot again, please write /start.")
             except Exception as e:
                 await update.message.reply_text(f"Error during document conversion: {e}")
 
@@ -177,7 +191,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 await update.message.reply_photo(photo=media, filename='instagram_image.jpg')
             else:
                 await update.message.reply_text("Unsupported media type.")
-            await update.message.reply_text(f"Download successful! For using the bot again, please write /start.")
+                # Credit.deduct_credits(user_id, 1)
+            await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
         else:
             await update.message.reply_text("Failed to download the Instagram content.")
         user_state[user_id] = None
@@ -214,7 +229,8 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
                 try:
                     with open(filepath, 'rb') as file:
                         await context.bot.send_audio(chat_id=query.message.chat_id, audio=file, title="Converted MP3")
-                    await query.edit_message_text(f"Download successful: {filepath}, For using the bot again, please write /start.")
+                    # Credit.deduct_credits(user_id, 1)
+                    await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
                 except Exception as e:
                     print(f"Error sending MP3 file: {e}")
                     await query.edit_message_text("Failed to send MP3 file.")
@@ -230,7 +246,8 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             if filepath and os.path.exists(filepath):
                 with open(filepath, 'rb') as video_file:
                     await context.bot.send_video(chat_id=update.effective_chat.id, video=video_file)
-                await update.message.reply_text(f"Download successful: {filepath}, For using the bot again, please write /start.")
+                # Credit.deduct_credits(user_id, 1)
+                await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
                 os.remove(filepath)  
             else:
                 await update.message.reply_text("Failed to download the TikTok video.")
@@ -253,6 +270,8 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             output_image.seek(0)
             await context.bot.send_document(chat_id=query.message.chat_id, document=output_image,
                                             filename=f"converted.{output_format}")
+        # Credit.deduct_credits(user_id, 1)
+        await query.edit_message_text(f"🥳Image conversion successful! \nFor using the bot again, please write /start.")
 
         user_state[user_id] = None
         user_images.pop(user_id, None)
@@ -275,7 +294,8 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
             with open(output_filename, 'rb') as video_file:
                 await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
             os.remove(output_filename)  
-            await query.edit_message_text("Download successful! For using the bot again, please write /start.")
+            Credit.deduct_credits(user_id, 1)
+            await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
         except Exception as e:
             await query.edit_message_text(f"Error downloading video: {e}")
         user_state[user_id] = None
@@ -296,7 +316,8 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
                 try:
                     with open(filepath, 'rb') as file:
                         await context.bot.send_video(chat_id=query.message.chat_id, video=file)
-                    await query.edit_message_text(f"Download successful: {filepath}, For using the bot again, please write /start.")
+                    Credit.deduct_credits(user_id, 1)
+                    await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
                 except Exception as e:
                     print(f"Error sending MP4 file: {e}")
                     await query.edit_message_text("Failed to send MP4 file.")
@@ -309,21 +330,3 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
     else:
         await query.edit_message_text("No YouTube URL received.")
-
-
-def main():
-    application = Application.builder().token(TOKEN).read_timeout(60).build()
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button_callback))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    application.add_handler(MessageHandler(filters.PHOTO, handle_message))
-
-    application.add_handler(MessageHandler(filters.ATTACHMENT, handle_message))
-
-    # Start the bot
-    application.run_polling()
-
-
-if __name__ == '__main__':
-    main()
