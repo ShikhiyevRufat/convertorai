@@ -2,8 +2,13 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 from utilities.start_func import start
 from utilities.help_func import help
 from bot_system import button_callback, handle_message
+from dotenv import load_dotenv
+import os
 
-TOKEN = '7503452735:AAHe7RPN_9GpaVWU4JYjmKG68Boq39hDljM'
+def configure():
+    load_dotenv()
+
+TOKEN = os.getenv("token")
 
 def main():
     application = Application.builder().token(TOKEN).read_timeout(60).build()

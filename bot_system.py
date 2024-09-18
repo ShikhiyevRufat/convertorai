@@ -236,6 +236,8 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
                     await query.edit_message_text("Failed to send MP3 file.")
                 finally:
                     os.remove(filepath)
+                    user_state[user_id] = None  
+                    user_youtube_urls.pop(user_id, None)
             else:
                 await query.edit_message_text("Failed to convert to MP3.")
             user_state[user_id] = None
@@ -249,12 +251,15 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
                 # Credit.deduct_credits(user_id, 1)
                 await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
                 os.remove(filepath)  
+                user_state[user_id] = None
+                user_images.pop(user_id, None)
             else:
                 await update.message.reply_text("Failed to download the TikTok video.")
         except Exception as e:
             await update.message.reply_text(f"An error occurred: {str(e)}")
 
         user_state[user_id] = None
+        user_images.pop(user_id, None)
 
     elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
         await query.edit_message_text("Please wait 1 minute while your image is being processed...")
@@ -299,6 +304,7 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
         except Exception as e:
             await query.edit_message_text(f"Error downloading video: {e}")
         user_state[user_id] = None
+        user_images.pop(user_id, None)
 
     if user_state.get(user_id) == 'awaiting_youtube_selection':
         url = user_youtube_urls.get(user_id)
