@@ -17,7 +17,7 @@ user_youtube_urls = {}
 user_documents = {}
 user_credits = {}
 INITIAL_CREDITS = 30
-
+ 
 
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
