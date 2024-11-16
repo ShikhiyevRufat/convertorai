@@ -12,11 +12,19 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = """
 ℹ️ Here’s the list of features available:
 
-📷 **Supported Images**: png, jpg, jpeg, gif, tiff, pdf, avif, webp  
-📃 **Supported Documents**: XLSX, XLS, DOC, DOCX, PPTX, PPT, PDF  
-🎥 **YouTube Downloads**: MP3 and MP4  
-💎 **TikTok Downloads**: Reels  
-💡  **Instagram Downloads**: Post and Video  
+📹 -- Supported Images --: png, jpg, jpeg, gif, tiff, pdf, avif, webp  
+
+
+📃 -- Supported Documents --: XLSX, XLS, DOC, DOCX, PPTX, PPT, PDF  
+
+
+🎥 -- YouTube Downloads --: MP3 and MP4  
+
+
+💎 -- TikTok Downloads --: Reels  
+
+
+💡  -- Instagram Downloads --: Post and Video  
     """
     
     await context.bot.send_message(
