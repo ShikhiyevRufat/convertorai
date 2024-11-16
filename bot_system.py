@@ -235,13 +235,16 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
                     await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
                 except Exception as e:
                     print(f"Error sending MP3 file: {e}")
-                    await query.edit_message_text("Failed to send MP3 file.")
+                    await query.edit_message_text(f"Failed to send MP3 file: {e}")
                 finally:
                     os.remove(filepath)
                     user_state[user_id] = None  
                     user_youtube_urls.pop(user_id, None)
             else:
-                await query.edit_message_text("Failed to convert to MP3.")
+                try:
+                    await query.edit_message_text("Successful was converted to MP3.")
+                except Exception as e:    
+                    await query.edit_message_text(f"Failed to convert to MP3 {e}")
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
         else:
