@@ -12,7 +12,7 @@ def instagram_downloander(url, content_type):
         shortcode = url.split('/')[-2]
         post = instaloader.Post.from_shortcode(ig.context, shortcode)
 
-        for _ in range(3):  # Retry logic
+        for _ in range(3):  
             try:
                 post = instaloader.Post.from_shortcode(ig.context, shortcode)
                 if post.is_video:
@@ -38,5 +38,5 @@ def instagram_downloander(url, content_type):
         return None, None
     except Exception as e:
         print(f"Unexpected error: {e}")
-        time.sleep(10)  # Sleep for 10 seconds before retrying
-        return instagram_downloander(url, content_type)  # Retry the request
+        time.sleep(10)  
+        return instagram_downloander(url, content_type) 

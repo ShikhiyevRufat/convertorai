@@ -9,7 +9,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 class HelpText :
     text = """
     Get information about our bot.
-    15 Supported files:
+    20 Supported files:
 
     📷 Images (8)
     png, jpg, jpeg, gif, tiff, pdf, avif, webp
@@ -17,13 +17,13 @@ class HelpText :
     💼 Document (7)
     XLSX, XLS, DOC, DOCX, PPTX, PPT, PDF
 
-    🎥 Youtube downloaded 
+    🎥 Youtube downloaded (2)
     MP3 and MP4
 
-    📱 TikTok download
+    📱 TikTok download (1)
     Reels
 
-    📱 Instagram download
+    📱 Instagram download (2)
     Video and Post
 
     """
