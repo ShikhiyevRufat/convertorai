@@ -1,6 +1,8 @@
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 from telegram import Update, ReplyKeyboardMarkup
 from bot_system import button_callback, handle_message
+from utilities.help_func import help
+from utilities.start_func import start
 from dotenv import load_dotenv
 import os
 
@@ -16,7 +18,7 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         chat_id=update.effective_chat.id,
         text="Returning to the main menu. Use 📲 Start to begin again."
     )
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         ["📲 Start", "ℹ️ Help", "⚙️ Settings"],
         ["🔙 Back to Menu"]
@@ -35,6 +37,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     application = Application.builder().token(TOKEN).read_timeout(60).build()
+    application.add_handler(CommandHandler("start", start_now))
     application.add_handler(CommandHandler("📲 Start", start))
     application.add_handler(CommandHandler("ℹ️ Help", help))
     application.add_handler(CommandHandler("🔙 Back to Menu", back_to_menu))
