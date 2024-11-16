@@ -1,28 +1,20 @@
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-
     keyboard = [
-        ["📲 Start", "ℹ️ Help", "⚙️ Settings"],
-        ["🔙 Back to Menu"]  
+        [InlineKeyboardButton("🖼️ Convert Image Format", callback_data='convert_image')],
+        [InlineKeyboardButton("📄 Convert Documents to PDF", callback_data='convert_document')],
+        [InlineKeyboardButton("📲 Generate QR Code", callback_data='generate_qr')],
+        [InlineKeyboardButton("📷 Instagram Post or Reel Download", callback_data='instagram_download')],
+        [InlineKeyboardButton("🎵 Tiktok Reel Download", callback_data='tiktok_download')],
+        [InlineKeyboardButton("🎥 YouTube MP3 or MP4 Download", callback_data='youtube_download')]
     ]
-    markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
 
-    text = """
-👋 Welcome! I can assist you with various tasks:
-    
-- 📷 Image Conversion
-- 📄 Document to PDF Conversion
-- 📲 QR Code Generation
-- 🎥 YouTube MP3/MP4 Downloads
-- 📱 Instagram and TikTok Downloads
+    markup = InlineKeyboardMarkup(keyboard)
 
-Tap on a button below to get started!
-    """
-    
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text,
+        text="👋 Welcome! Which specialty do you want to use?",
         reply_markup=markup
     )
