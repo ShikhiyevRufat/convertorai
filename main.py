@@ -1,4 +1,4 @@
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 from telegram import Update, ReplyKeyboardMarkup
 from bot_system import button_callback, handle_message
 from utilities.help_func import help as help_func
@@ -52,6 +52,9 @@ def main():
     application.add_handler(MessageHandler(filters.Regex("^📲 Start$"), start_func))  # Start button
     application.add_handler(MessageHandler(filters.Regex("^ℹ️ Help$"), help_func))  # Help button
     application.add_handler(MessageHandler(filters.Regex("^🔙 Back to Menu$"), back_to_menu))  # Back button
+
+    application.add_handler(CallbackQueryHandler(button_callback))
+
 
     # Other Handlers
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
