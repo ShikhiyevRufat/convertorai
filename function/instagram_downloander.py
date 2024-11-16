@@ -1,3 +1,4 @@
+import time
 import instaloader
 import requests
 from io import BytesIO
@@ -33,6 +34,10 @@ def instagram_downloander(url, content_type):
     except instaloader.exceptions.BadResponseException as e:
         print(f"An error occurred while fetching post metadata: {e}")
         return None, None
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        if "401" in str(e) or "429" in str(e):
+            print("Rate limit exceeded. Waiting before retrying...")
+            time.sleep(60)  
+            return instagram_downloander(url, content_type) 
+        print(f"Unexpected error: {e}")
         return None, None
