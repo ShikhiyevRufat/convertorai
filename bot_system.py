@@ -241,10 +241,7 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
                     user_state[user_id] = None  
                     user_youtube_urls.pop(user_id, None)
             else:
-                try:
-                    await query.edit_message_text("Successful was converted to MP3.")
-                except Exception as e:    
-                    await query.edit_message_text(f"Failed to convert to MP3 {e}")
+                await query.edit_message_text("Failed to convert to MP3.")
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
         else:
