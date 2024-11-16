@@ -5,7 +5,7 @@ from io import BytesIO
 import os
 from function.image_convertor import convert_image
 from function.document_convertor import document_convertor
-from function.instagram_downloander import instagram_downloader
+from function.instagram_downloander import instagram_downloander
 from function.qr_generate import qr_generate
 from function.tiktok_downloander import download_tiktok
 from function.youtube_downloander import youtube_downloander
@@ -181,12 +181,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     elif user_state.get(user_id) == 'instagram_post':
         url = update.message.text
-        content_type = 'post'  # You can change to 'reel' if you want to handle reels
-
+        content_type = 'post'
         await update.message.reply_text("Please wait 1 minute for loading...")
         
-        # Use the new downloader function
-        media, media_type = instagram_downloader(url, content_type)
+        media, media_type = instagram_downloander(url, content_type)
 
         if media and media_type:
             if media_type == 'video':
@@ -195,12 +193,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 await update.message.reply_photo(photo=media, filename='instagram_image.jpg')
             else:
                 await update.message.reply_text("Unsupported media type.")
+                # Credit.deduct_credits(user_id, 1)
             await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
         else:
             await update.message.reply_text("Failed to download the Instagram content.")
-        
         user_state[user_id] = None
-
             
     elif user_state.get(user_id) == 'awaiting_youtube_url':
         url = update.message.text
