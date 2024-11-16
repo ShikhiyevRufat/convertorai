@@ -1,8 +1,12 @@
 def document_convertor(input_file, output_file):
     import subprocess
     import os
+    import platform
 
-    LIBREOFFICE_PATH = r'C:\Program Files\LibreOffice\program\soffice.exe'  
+    if platform.system() == 'Windows':
+        LIBREOFFICE_PATH = r'C:\Program Files\LibreOffice\program\soffice.exe'
+    else:
+        LIBREOFFICE_PATH = '/usr/bin/libreoffice'  
 
     def convert_to_pdf(input_file, output_file):
         extension = os.path.splitext(input_file)[1].lower()
