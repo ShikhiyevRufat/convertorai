@@ -8,21 +8,12 @@ def youtube_downloander(url, format, resolution=None):
         filename = f"{safe_title}.{format}"
         filepath = os.path.join(os.getcwd(), filename)
 
-        options = {
-            'outtmpl': filepath,
-            'cookiefile': 'youtube_cookie.txt',
-            'nocheckcertificate': True,
-        }
+        options = {}
 
         if format == 'mp3':
             options.update({
-                'format': 'bestaudio/best',
-                'keepvideo': False,  
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
+                'format': 'bestaudio/best[ext=m4a]',
+                'keepvideo': False,
             })
         elif format == 'mp4':
             format_option = 'bestvideo+bestaudio'
@@ -36,8 +27,6 @@ def youtube_downloander(url, format, resolution=None):
             options.update({
                 'format': format_option,
                 'merge_output_format': 'mp4',
-                'quiet': False,
-                'verbose': True,
             })
 
         with youtube_dl.YoutubeDL(options) as ydl:
