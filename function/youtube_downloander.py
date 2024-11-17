@@ -12,6 +12,7 @@ def youtube_downloander(url, format, resolution=None):
             'outtmpl': filepath,
             'age_limit': 21,
             'verbose': True,
+            'cookiefile': 'function/youtbe_cookie.txt',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         }
 
@@ -19,6 +20,7 @@ def youtube_downloander(url, format, resolution=None):
             options.update({
                 'format': 'bestaudio/best[ext=m4a]',
                 'keepvideo': False,
+                'nocheckcertificate': True,
             })
         elif format == 'mp4':
             format_option = 'bestvideo+bestaudio'
@@ -32,6 +34,7 @@ def youtube_downloander(url, format, resolution=None):
             options.update({
                 'format': format_option,
                 'merge_output_format': 'mp4',
+                'nocheckcertificate': True,
             })
 
         with youtube_dl.YoutubeDL(options) as ydl:
