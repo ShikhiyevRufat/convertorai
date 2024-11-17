@@ -11,6 +11,7 @@ def youtube_downloander(url, format, resolution=None):
         options = {
             'outtmpl': filepath,
             'cookiefile': 'youtube_cookie.txt',
+            'nocheckcertificate': True,
         }
 
         if format == 'mp3':
@@ -35,6 +36,8 @@ def youtube_downloander(url, format, resolution=None):
             options.update({
                 'format': format_option,
                 'merge_output_format': 'mp4',
+                'quiet': False,
+                'verbose': True,
             })
 
         with youtube_dl.YoutubeDL(options) as ydl:
