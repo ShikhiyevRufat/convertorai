@@ -10,6 +10,7 @@ def youtube_downloander(url, format, resolution=None):
 
         options = {
             'outtmpl': filepath,
+            'cookiefile': 'youtube_cookie.txt',
         }
 
         if format == 'mp3':
