@@ -246,19 +246,19 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             user_youtube_urls.pop(user_id, None)
         else:
             await query.edit_message_text("No YouTube URL received.")
-        try:
-            if filepath and os.path.exists(filepath):
-                with open(filepath, 'rb') as video_file:
-                    await context.bot.send_video(chat_id=update.effective_chat.id, video=video_file)
-                # Credit.deduct_credits(user_id, 1)
-                await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
-                os.remove(filepath)  
-                user_state[user_id] = None
-                user_images.pop(user_id, None)
-            else:
-                await update.message.reply_text("Failed to download the TikTok video.")
-        except Exception as e:
-            await update.message.reply_text(f"An error occurred: {str(e)}")
+        # try:
+        #     if filepath and os.path.exists(filepath):
+        #         with open(filepath, 'rb') as video_file:
+        #             await context.bot.send_video(chat_id=update.effective_chat.id, video=video_file)
+        #         # Credit.deduct_credits(user_id, 1)
+        #         await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
+        #         os.remove(filepath)  
+        #         user_state[user_id] = None
+        #         user_images.pop(user_id, None)
+        #     else:
+        #         await update.message.reply_text("Failed to download the TikTok video.")
+        # except Exception as e:
+        #     await update.message.reply_text(f"An error occurred: {str(e)}")
 
         user_state[user_id] = None
         user_images.pop(user_id, None)
