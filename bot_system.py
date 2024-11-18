@@ -109,8 +109,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         text = update.message.text
         try:
             qr_code = qr_generate(text)
-            await update.message.reply_photo(photo=qr_code, caption=f"🎯Here is your QR code. Your QR created is successfully!")
-            await start_func
+            await update.message.reply_photo(photo=qr_code, caption=f"🎯Here is your QR code. Your QR code created is successfully!")
+            await start_func(
+                update= Update,
+                context= ContextTypes.DEFAULT_TYPE,
+            )
         except Exception as e:
             update.message.reply_text(f"Error generating or sending QR code: {e}")
 
