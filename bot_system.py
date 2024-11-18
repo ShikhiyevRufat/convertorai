@@ -10,6 +10,7 @@ from function.qr_generate import qr_generate
 from function.tiktok_downloander import download_tiktok
 from function.youtube_downloander import youtube_downloander
 from user_credit import Credit
+from utilities.start_func import start
 
 user_state = {}
 user_images = {}
@@ -108,7 +109,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         text = update.message.text
         try:
             qr_code = qr_generate(text)
-            await update.message.reply_photo(photo=qr_code, caption="🎯Here is your QR code. \nFor using the bot again, please write /start.")
+            await update.message.reply_photo(photo=qr_code, caption=f"🎯Here is your QR code. \n{start}")
         except Exception as e:
             update.message.reply_text(f"Error generating or sending QR code: {e}")
 
