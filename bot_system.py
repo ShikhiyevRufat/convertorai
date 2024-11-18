@@ -8,7 +8,7 @@ from function.document_convertor import document_convertor
 from function.instagram_downloander import instagram_downloader
 from function.qr_generate import qr_generate
 from function.tiktok_downloander import download_tiktok
-from function.youtube_downloander import youtube_downloander
+from function.youtube_downloander import youtube_downloader
 from user_credit import Credit
 from utilities.start_func import start as start_func
 
@@ -231,7 +231,7 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
         if url:
             await query.edit_message_text("Please wait 1 minute while your MP3 is being processed...")
 
-            filepath = youtube_downloander(url, 'mp3')
+            filepath = youtube_downloader(url, 'mp3')
             if filepath and os.path.exists(filepath):
                 try:
                     with open(filepath, 'rb') as file:
@@ -311,7 +311,7 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
             await query.edit_message_text("Please wait 1 minute while your video is being processed...")
             
-            filepath = youtube_downloander(url, 'mp4', resolution)
+            filepath = youtube_downloader(url, 'mp4', resolution)
             if filepath and os.path.exists(filepath):
                 try:
                     with open(filepath, 'rb') as file:
