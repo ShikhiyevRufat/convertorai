@@ -1,39 +1,35 @@
-import yt_dlp as youtube_dl
+from pytubefix import YouTube
 import os
 
-def youtube_downloander(url, format, resolution=None):
+def youtube_downloader(url, format, resolution=None):
     try:
-        video_info = youtube_dl.YoutubeDL().extract_info(url=url, download=False)
-        safe_title = "".join([c for c in video_info['title'] if c.isalnum() or c in (' ', '.', '_')]).rstrip()
+        yt = YouTube(url)
+
+        # Generate a safe file title
+        safe_title = "".join([c for c in yt.title if c.isalnum() or c in (' ', '.', '_')]).rstrip()
         filename = f"{safe_title}.{format}"
         filepath = os.path.join(os.getcwd(), filename)
 
-        options = {}
-
         if format == 'mp3':
-            options.update({
-                'format': 'bestaudio/best[ext=m4a]',
-                'keepvideo': False,
-            })
+            # Download audio
+            stream = yt.streams.filter(only_audio=True, file_extension='mp4').first()
+            if stream:
+                stream.download(filename=filename)
+            else:
+                raise Exception("No audio stream found.")
         elif format == 'mp4':
-            format_option = 'bestvideo+bestaudio'
-            if resolution == '1080p':
-                format_option = 'bestvideo[height<=1080]+bestaudio/best[height<=1080]'
-            elif resolution == '720p':
-                format_option = 'bestvideo[height<=720]+bestaudio/best[height<=720]'
-            elif resolution == '360p':
-                format_option = 'bestvideo[height<=360]+bestaudio/best[height<=360]'
+            # Download video based on resolution
+            if resolution:
+                stream = yt.streams.filter(res=resolution, file_extension='mp4').first()
+            else:
+                stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
             
-            options.update({
-                'format': format_option,
-                'merge_output_format': 'mp4',
-            })
-
-        with youtube_dl.YoutubeDL(options) as ydl:
-            ydl.download([video_info['webpage_url']])
+            if stream:
+                stream.download(filename=filename)
+            else:
+                raise Exception(f"No video stream found for resolution: {resolution}")
 
         print(f"Downloaded file path: {filepath}")
-
         return filepath
     except Exception as e:
         print(f"An error occurred: {e}")
