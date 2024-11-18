@@ -3,7 +3,7 @@ import os
 
 def youtube_downloader(url, format, resolution=None):
     try:
-        yt = YouTube(url)
+        yt = YouTube(url, use_po_token=True)
 
         # Generate a safe file title
         safe_title = "".join([c for c in yt.title if c.isalnum() or c in (' ', '.', '_')]).rstrip()
