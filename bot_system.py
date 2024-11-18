@@ -11,6 +11,7 @@ from function.tiktok_downloander import download_tiktok
 from function.youtube_downloander import youtube_downloader
 from user_credit import Credit
 from utilities.start_func import start as start_func
+import re
 
 user_state = {}
 user_images = {}
@@ -277,6 +278,11 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
     else:
         await query.edit_message_text("Please upload an image first.")
 
+def sanitize_filename(filepath):
+    """Sanitize the filename by removing special characters and normalizing the path."""
+    directory, filename = os.path.split(filepath)
+    sanitized_filename = re.sub(r'[^\w\s-]', '', filename).replace(' ', '_')
+    return os.path.join(directory, sanitized_filename)
 
 async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -310,23 +316,34 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
             resolution = query.data.split('_')[1]
 
             await query.edit_message_text("Please wait 1 minute while your video is being processed...")
-            
+
             filepath = youtube_downloader(url, 'mp4', resolution)
+            print(f"Original file path from downloader: {filepath}")
+
             if filepath and os.path.exists(filepath):
+                # Sanitize and rename the file if necessary
+                sanitized_filepath = sanitize_filename(filepath)
+                if filepath != sanitized_filepath:
+                    os.rename(filepath, sanitized_filepath)
+                    filepath = sanitized_filepath
+                    print(f"Sanitized file path: {filepath}")
+
                 try:
-                    with open(filepath, 'rb') as file:
-                        await context.bot.send_video(chat_id=query.message.chat_id, video=file)
-                    Credit.deduct_credits(user_id, 1)
-                    await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
+                    with open(filepath, 'rb') as video_file:
+                        await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
+                    Credit.deduct_credits(user_id, 1)  # Assuming Credit function exists
+                    await query.edit_message_text("Download successful! \nFor using the bot again, please write /start.")
                 except Exception as e:
                     print(f"Error sending MP4 file: {e}")
                     await query.edit_message_text("Failed to send MP4 file.")
                 finally:
-                    os.remove(filepath)
+                    os.remove(filepath)  # Clean up the downloaded file
             else:
                 await query.edit_message_text("Failed to download the video.")
-        user_state[user_id] = None
-        user_youtube_urls.pop(user_id, None)
+            
+            # Reset the user state and clear the URL
+            user_state[user_id] = None
+            user_youtube_urls.pop(user_id, None)
 
     else:
         await query.edit_message_text("No YouTube URL received.")
