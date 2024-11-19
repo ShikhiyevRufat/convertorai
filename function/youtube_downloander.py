@@ -16,7 +16,7 @@ def youtube_downloader(url, format, resolution=None):
             'outtmpl': filepath,  
             'quiet': False,       
             'merge_output_format': format if format == 'mp4' else None,
-            'cookies': 'youtube_cookie.txt',
+            'cookiefile': 'youtube_cookie.txt',
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         }
 
@@ -24,7 +24,7 @@ def youtube_downloader(url, format, resolution=None):
             options.update({
                 'format': 'bestaudio/best[ext=m4a]',  
                 'keepvideo': False,   
-
+                'cookiefile': 'youtube_cookie.txt',
             })
         elif format == 'mp4':
             format_option = 'bestvideo+bestaudio'
@@ -37,6 +37,7 @@ def youtube_downloader(url, format, resolution=None):
 
             options.update({
                 'format': format_option,  
+                'cookiefile': 'youtube_cookie.txt',
             })
 
         with youtube_dl.YoutubeDL(options) as ydl:
