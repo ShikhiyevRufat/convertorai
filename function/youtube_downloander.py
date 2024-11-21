@@ -12,19 +12,22 @@ def youtube_downloader(url, format, resolution=None):
         os.makedirs(output_directory, exist_ok=True)  
         filepath = os.path.join(output_directory, filename)
 
+        # Replace with your proxy address and port
+        proxy_address = "http://185.49.31.207:8081"
+
         options = {
             'outtmpl': filepath,  
             'quiet': False,       
             'merge_output_format': format if format == 'mp4' else None,
             'cookiefile': 'cookies.txt',
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'proxy': proxy_address,  # Add proxy here
         }
 
         if format == 'mp3':
             options.update({
                 'format': 'bestaudio/best[ext=m4a]',  
                 'keepvideo': False,   
-                'cookiefile': 'cookies.txt',
             })
         elif format == 'mp4':
             format_option = 'bestvideo+bestaudio'
@@ -37,7 +40,6 @@ def youtube_downloader(url, format, resolution=None):
 
             options.update({
                 'format': format_option,  
-                'cookiefile': 'cookies.txt',
             })
 
         with youtube_dl.YoutubeDL(options) as ydl:
