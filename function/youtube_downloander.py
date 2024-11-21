@@ -13,12 +13,15 @@ def youtube_downloader(url, format, resolution=None):
         filepath = os.path.join(output_directory, filename)
 
         options = {
-            'outtmpl': filepath,  
-            'quiet': False,       
+            'outtmpl': filepath,
+            'quiet': False,
             'merge_output_format': format if format == 'mp4' else None,
             'cookiefile': 'cookies.txt',
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'username': 'shikhiyevrufat@gmail.com',  
+            'password': 'Shikhiyevrufat2004.',          
         }
+
 
         if format == 'mp3':
             options.update({
