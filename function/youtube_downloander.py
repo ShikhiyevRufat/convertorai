@@ -1,5 +1,6 @@
 import yt_dlp as youtube_dl
 import os
+import random
 
 def youtube_downloader(url, format, resolution=None):
     try:
@@ -12,16 +13,22 @@ def youtube_downloader(url, format, resolution=None):
         os.makedirs(output_directory, exist_ok=True)  
         filepath = os.path.join(output_directory, filename)
 
-        # Replace with your proxy address and port
-        proxy_address = "http://89.104.71.70:1080"
+        proxies = [
+            "http://89.104.71.70:1080"
+        ]
+        proxy_address = random.choice(proxies)
 
         options = {
             'outtmpl': filepath,  
             'quiet': False,       
             'merge_output_format': format if format == 'mp4' else None,
             'cookiefile': 'cookies.txt',
-            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'proxy': proxy_address,  # Add proxy here
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',
+            'proxy': proxy_address,
+            'headers': {
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Referer': 'https://www.youtube.com/',
+            },
         }
 
         if format == 'mp3':
