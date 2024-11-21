@@ -13,7 +13,7 @@ def youtube_downloader(url, format, resolution=None):
         filepath = os.path.join(output_directory, filename)
 
         # Replace with your proxy address and port
-        proxy_address = "http://185.49.31.207:8081"
+        proxy_address = "http://89.104.71.70:1080"
 
         options = {
             'outtmpl': filepath,  
