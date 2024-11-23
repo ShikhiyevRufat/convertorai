@@ -291,20 +291,24 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
     if user_state.get(user_id) == 'awaiting_tiktok_url':
         url = update.message.text
-        resolution = query.data.split('_')[1]  
+        resolution = query.data.split('_')[1]
         output_filename = 'tiktok_video.mp4'
 
         try:
             download_tiktok(url, output_filename, target_resolution=resolution)
+            
             with open(output_filename, 'rb') as video_file:
                 await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
-            os.remove(output_filename)  
+            os.remove(output_filename)
+            
             Credit.deduct_credits(user_id, 1)
-            await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
+            await query.edit_message_text("🥳 Download successful! \nFor using the bot again, please write /start.")
         except Exception as e:
             await query.edit_message_text(f"Error downloading video: {e}")
-        user_state[user_id] = None
-        user_images.pop(user_id, None)
+        finally:
+            user_state[user_id] = None
+            user_images.pop(user_id, None)
+
 
     if user_state.get(user_id) == 'awaiting_youtube_selection':
         url = user_youtube_urls.get(user_id)
@@ -317,12 +321,10 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
             await query.edit_message_text("Please wait 1 minute while your video is being processed...")
 
-            # Call the fixed youtube_downloader function
             filepath = youtube_downloader(url, 'mp4')
             print(f"Original file path from downloader: {filepath}")
 
             if filepath and os.path.isfile(filepath):
-                # Sanitize and rename the file if necessary
                 sanitized_filepath = sanitize_filename(filepath)
                 if filepath != sanitized_filepath:
                     os.rename(filepath, sanitized_filepath)
@@ -331,19 +333,17 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
                 try:
                     with open(filepath, 'rb') as video_file:
-                        print(f"{filepath} *****")
                         await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
-                    Credit.deduct_credits(user_id, 1)  # Assuming Credit function exists
+                    Credit.deduct_credits(user_id, 1) 
                     await query.edit_message_text("Download successful! \nFor using the bot again, please write /start.")
                 except Exception as e:
                     print(f"Error sending MP4 file: {e}")
                     await query.edit_message_text("Failed to send MP4 file.")
                 finally:
-                    os.remove(filepath)  # Clean up the downloaded file
+                    os.remove(filepath)  
             else:
                 await query.edit_message_text("Failed to download the video.")
             
-            # Reset the user state and clear the URL
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
 
