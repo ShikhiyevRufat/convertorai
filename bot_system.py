@@ -356,3 +356,4 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 # sudo systemctl daemon-reload
 # sudo systemctl restart telegrambot
 # sudo journalctl -u telegrambot -f
+# sudo nano /etc/systemd/system/telegrambot.service
