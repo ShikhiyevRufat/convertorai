@@ -317,10 +317,11 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
             await query.edit_message_text("Please wait 1 minute while your video is being processed...")
 
-            filepath = youtube_downloader(url, 'mp4', resolution)
+            # Call the fixed youtube_downloader function
+            filepath = youtube_downloader(url, 'mp4')
             print(f"Original file path from downloader: {filepath}")
 
-            if filepath and os.path.exists(filepath):
+            if filepath and os.path.isfile(filepath):
                 # Sanitize and rename the file if necessary
                 sanitized_filepath = sanitize_filename(filepath)
                 if filepath != sanitized_filepath:
@@ -330,6 +331,7 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
                 try:
                     with open(filepath, 'rb') as video_file:
+                        print(f"{filepath} *****")
                         await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
                     Credit.deduct_credits(user_id, 1)  # Assuming Credit function exists
                     await query.edit_message_text("Download successful! \nFor using the bot again, please write /start.")
@@ -345,8 +347,10 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
 
-    else:
-        await query.edit_message_text("No YouTube URL received.")
+        else:
+            await query.edit_message_text("No YouTube URL received.")
+
+
 
 
 # sudo systemctl daemon-reload
