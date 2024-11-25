@@ -1,6 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, filters
-from PIL import Image
+from telegram.ext import ContextTypes
 from io import BytesIO
 import os
 from function.image_convertor import convert_image
@@ -8,9 +7,13 @@ from function.document_convertor import document_convertor
 from function.instagram_downloander import instagram_downloader
 from function.qr_generate import qr_generate
 from function.tiktok_downloander import download_tiktok
-from function.youtube_downloander import youtube_downloader
+from youtube_downloander import youtube_downloader
 from user_credit import Credit
 from utilities.start_func import start as start_func
+from utilities.language_func import language as lang_func
+from utilities.translations import translations
+from utilities.language_func import user_language
+from yt_download.main import Ytube
 import re
 
 user_state = {}
@@ -19,46 +22,51 @@ user_youtube_urls = {}
 user_documents = {}
 user_credits = {}
 INITIAL_CREDITS = 30
- 
+
 
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_id = update.effective_chat.id
+    lang = user_language.get(user_id, "en")
+
+    menu = translations[lang]
     query = update.callback_query
     await query.answer()
 
     if query.data == 'convert_image':
         user_state[query.from_user.id] = 'awaiting_image_upload'
-        await query.edit_message_text("Please upload the image you want to convert🖼️")
+        await query.edit_message_text(f"{menu["please_image_upload"]}")
+
     elif query.data == 'convert_document':
         user_state[query.from_user.id] = 'awaiting_document_upload'
-        await query.edit_message_text("Please upload the document you want to convert to PDF📄")
+        await query.edit_message_text(f"{menu["please_document_upload"]}")
 
-    elif query.data == 'instagram_download':
+    elif query.data == 'start':
+        user_state[query.from_user.id] = 'starts'
+        await start_func(update, context) 
 
-        keyboard = [
-            [InlineKeyboardButton("Post or Reel", callback_data='instagram_post')]
-        ]
-        markup = InlineKeyboardMarkup(keyboard)
-        await query.edit_message_text("Please choose whether you want to download Reels or Post📷", reply_markup=markup)
-    elif query.data == 'instagram_reels' or query.data == 'instagram_post':
-        user_state[query.from_user.id] = query.data  
-        await query.edit_message_text("Please send the Instagram URL.")
+    elif query.data == 'language':
+        await lang_func(update, context)
 
     elif query.data == 'generate_qr':
         user_state[query.from_user.id] = 'awaiting_qr_input'
-        await query.edit_message_text("Please enter the text or URL for the QR code📲")
+        await query.edit_message_text(f"{menu["please_enter_qr"]}")
 
     elif query.data == 'tiktok_download':
         user_state[query.from_user.id] = 'awaiting_tiktok_url'
-        await query.edit_message_text("Please send me the TikTok video URL🎥")
+        await query.edit_message_text(f"{menu["please_send_tiktok"]}")
 
     elif query.data == 'youtube_download':
         user_state[query.from_user.id] = 'awaiting_youtube_url'
-        await query.edit_message_text("Please send me the YouTube video URL🎥")
+        await query.edit_message_text(f"{menu["please_send_youtube"]}")
 
     elif query.data.startswith('format_'):
         await handle_format_selection(update, context)
     elif query.data.startswith('quality_'):
         await handle_quality_selection(update, context)
+    elif query.data.startswith('lang_'):
+        lang_code = query.data.split('_')[1]
+        user_language[query.from_user.id] = lang_code
+        await start_func(update, context)
     else:
         await query.edit_message_text("This function is not available.")
 
@@ -76,20 +84,32 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 #     user_id = update.message.from_user.id
 #     Credit.reset_credits(user_id)
 #     await update.message.reply_text(f"Your credits have been refilled! 💎 You now have {Credit.INITIAL_CREDITS} credits.")
-
+def success_start():
+        keyboard = [
+            [InlineKeyboardButton("Start", callback_data='start'),InlineKeyboardButton("Language", callback_data='language')],
+        ]
+        markup = InlineKeyboardMarkup(keyboard)
+        return markup
+    
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
+    lang = user_language.get(user_id, "en")
 
-    
+    menu = translations[lang]
 
     # if not await check_credits(update, context):
     #     return
+    if user_state.get(user_id) == 'languages':
+        await lang_func(update, context)
+
+    if user_state.get(user_id) == 'starts':
+        await start_func(update, context)
 
     if user_state.get(user_id) == 'awaiting_tiktok_url':
         url = update.message.text
-        await update.message.reply_text("Downloading TikTok video...")
+        await update.message.reply_text(f"{menu["tiktok_download_video"]}")
 
         output_filename = 'tiktok_video.mp4'
         target_resolution = '720p'  
@@ -101,7 +121,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             os.remove(output_filename)  
             # Credit.deduct_credits(user_id, 1)
             # await update.message.reply_text(f"🥳Download successful! \n💎 Your credits:  {Credit.get_credits(user_id)}/30 (+1) \nFor using the bot again, please write /start.")
-            await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
+            await update.message.reply_text(f"{menu["download_success"]}",reply_markup=success_start())
         except Exception as e:
             await update.message.reply_text(f"Error downloading video: {e}")
         user_state[user_id] = None
@@ -110,11 +130,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         text = update.message.text
         try:
             qr_code = qr_generate(text)
-            await update.message.reply_photo(photo=qr_code, caption=f"🎯Here is your QR code. Your QR code created is successfully!")
-            await start_func(
-                update= Update,
-                context= ContextTypes.DEFAULT_TYPE,
-            )
+            await update.message.reply_photo(photo=qr_code, caption=f"{menu["download_success"]}",reply_markup=success_start()) 
         except Exception as e:
             update.message.reply_text(f"Error generating or sending QR code: {e}")
 
@@ -144,12 +160,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
             markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
-                "Which format do you want to convert the image to?",
+                f"{menu["choose_image_format"]}",
                 reply_markup=markup
             )
             user_state[user_id] = 'awaiting_format_selection'
         else:
-            await update.message.reply_text("Please upload an image.")
+            await update.message.reply_text(f"{menu["error_upload_image"]}")
 
     if user_state.get(user_id) == 'awaiting_document_upload':
         if update.message.document:
@@ -158,7 +174,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
             user_documents[user_id] = document_bytes
 
-            await update.message.reply_text("Converting your document to PDF. Please wait...")
+            await update.message.reply_text(f"{menu["converting_document"]}")
 
             try:
                 input_file_path = 'uploaded_document' + os.path.splitext(update.message.document.file_name)[1]
@@ -175,49 +191,28 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 os.remove(input_file_path)
                 os.remove(output_file_path)
                 # Credit.deduct_credits(user_id, 1)
-                await update.message.reply_text(f"🥳Document convert is successful! \nFor using the bot again, please write /start.")
+                await update.message.reply_text(f"{menu["download_success"]}",reply_markup=success_start())
             except Exception as e:
                 await update.message.reply_text(f"Error during document conversion: {e}")
 
             user_state[user_id] = None
             user_documents.pop(user_id, None)
         else:
-            await update.message.reply_text("Please upload a document.")
-
-
-    elif user_state.get(user_id) == 'instagram_post':
-        url = update.message.text
-        content_type = 'post'
-        await update.message.reply_text("Please wait 1 minute for loading...")
-        
-        media, media_type = instagram_downloader(url, content_type)
-
-        if media and media_type:
-            if media_type == 'video':
-                await update.message.reply_video(video=media, filename='instagram_video.mp4')
-            elif media_type == 'image':
-                await update.message.reply_photo(photo=media, filename='instagram_image.jpg')
-            else:
-                await update.message.reply_text("Unsupported media type.")
-                # Credit.deduct_credits(user_id, 1)
-            await update.message.reply_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
-        else:
-            await update.message.reply_text("Failed to download the Instagram content.")
-        user_state[user_id] = None
+            await update.message.reply_text(f"{menu["error_upload_document"]}")
             
     elif user_state.get(user_id) == 'awaiting_youtube_url':
         url = update.message.text
         user_youtube_urls[user_id] = url
 
         keyboard = [
-            [InlineKeyboardButton("MP3", callback_data='format_mp3')],
-            [InlineKeyboardButton("MP4 - 360", callback_data='quality_360')],
-            [InlineKeyboardButton("MP4 - 720", callback_data='quality_720')],
-            [InlineKeyboardButton("MP4 - 1080", callback_data='quality_1080')],
+            [InlineKeyboardButton("🔊MP3", callback_data='format_mp3')],
+            [InlineKeyboardButton("📹MP4 - 360p", callback_data='quality_360')],
+            [InlineKeyboardButton("📹MP4 - 720p", callback_data='quality_720')],
+            [InlineKeyboardButton("📹MP4 - 1080p", callback_data='quality_1080')],
         ]
         markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
-            "Select the format and quality you want to download:",
+            f"{menu["select_format_quality"]}",
             reply_markup=markup
         )
         user_state[user_id] = 'awaiting_youtube_selection'
@@ -226,11 +221,14 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
+    lang = user_language.get(user_id, "en")
+
+    menu = translations[lang]
 
     if user_state.get(user_id) == 'awaiting_youtube_selection' and query.data == 'format_mp3':
         url = user_youtube_urls.get(user_id)
         if url:
-            await query.edit_message_text("Please wait 1 minute while your MP3 is being processed...")
+            await query.edit_message_text(f"{menu["please_wait_mp3"]}")
 
             filepath = youtube_downloader(url, 'mp3')
             if filepath and os.path.exists(filepath):
@@ -238,7 +236,7 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
                     with open(filepath, 'rb') as file:
                         await context.bot.send_audio(chat_id=query.message.chat_id, audio=file, title="Converted MP3")
                     # Credit.deduct_credits(user_id, 1)
-                    await query.edit_message_text(f"🥳Download successful! \nFor using the bot again, please write /start.")
+                    await query.edit_message_text(f"{menu["download_success"]}",reply_markup=success_start())
                 except Exception as e:
                     print(f"Error sending MP3 file: {e}")
                     await query.edit_message_text(f"Failed to send MP3 file: {e}")
@@ -251,13 +249,13 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
         else:
-            await query.edit_message_text("No YouTube URL received.")
+            await query.edit_message_text(f"{menu["no_youtube_url"]}")
 
         user_state[user_id] = None
         user_images.pop(user_id, None)
 
     elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
-        await query.edit_message_text("Please wait 1 minute while your image is being processed...")
+        await query.edit_message_text(f"{menu["please_wait_image"]}")
 
         input_image = BytesIO(user_images[user_id])
         output_format = query.data.split('_')[1]
@@ -271,23 +269,26 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             await context.bot.send_document(chat_id=query.message.chat_id, document=output_image,
                                             filename=f"converted.{output_format}")
         # Credit.deduct_credits(user_id, 1)
-        await query.edit_message_text(f"🥳Image conversion successful! \nFor using the bot again, please write /start.")
+        await query.edit_message_text(f"{menu["download_success"]}",reply_markup=success_start())
 
         user_state[user_id] = None
         user_images.pop(user_id, None)
     else:
-        await query.edit_message_text("Please upload an image first.")
+        await query.edit_message_text(f"{menu["no_youtube_url"]}")
 
 def sanitize_filename(filepath):
-    """Sanitize the filename by removing special characters and normalizing the path."""
     directory, filename = os.path.split(filepath)
-    sanitized_filename = re.sub(r'[^\w\s-]', '', filename).replace(' ', '_')
+    sanitized_filename = re.sub(r'[<>:"/\\|?*]', '', filename).replace(' ', '_')
     return os.path.join(directory, sanitized_filename)
+
 
 async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
+    lang = user_language.get(user_id, "en")
+
+    menu = translations[lang]
 
     if user_state.get(user_id) == 'awaiting_tiktok_url':
         url = update.message.text
@@ -302,54 +303,60 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
             os.remove(output_filename)
             
             Credit.deduct_credits(user_id, 1)
-            await query.edit_message_text("🥳 Download successful! \nFor using the bot again, please write /start.")
+            await query.edit_message_text(f"{menu["download_success"]}",reply_markup=success_start())
         except Exception as e:
             await query.edit_message_text(f"Error downloading video: {e}")
         finally:
             user_state[user_id] = None
             user_images.pop(user_id, None)
-
+    
+    if user_state.get(user_id) == 'awaiting_starts':
+        start_func(update, context)
 
     if user_state.get(user_id) == 'awaiting_youtube_selection':
         url = user_youtube_urls.get(user_id)
         if not url:
-            await query.edit_message_text("No YouTube URL received.")
+            await query.edit_message_text(f"{menu['no_youtube_url']}")
             return
 
         if query.data.startswith('quality_'):
             resolution = query.data.split('_')[1]
 
-            await query.edit_message_text("Please wait 1 minute while your video is being processed...")
+            await query.edit_message_text(f"{menu['please_wait_mp4']}")
 
-            filepath = youtube_downloader(url, 'mp4')
-            print(f"Original file path from downloader: {filepath}")
+            # Download the video
+            filepath = youtube_downloader(url, 'mp4', resolution)
+            if filepath:
+                print(f"Original file path from downloader: {filepath}")
 
-            if filepath and os.path.isfile(filepath):
+                # Sanitize the file path
                 sanitized_filepath = sanitize_filename(filepath)
                 if filepath != sanitized_filepath:
-                    os.rename(filepath, sanitized_filepath)
-                    filepath = sanitized_filepath
-                    print(f"Sanitized file path: {filepath}")
+                    if not os.path.exists(sanitized_filepath):
+                        os.rename(filepath, sanitized_filepath)
+                    filepath = sanitized_filepath  # Update the file path to sanitized path
 
-                try:
-                    with open(filepath, 'rb') as video_file:
-                        await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
-                    Credit.deduct_credits(user_id, 1) 
-                    await query.edit_message_text("Download successful! \nFor using the bot again, please write /start.")
-                except Exception as e:
-                    print(f"Error sending MP4 file: {e}")
-                    await query.edit_message_text("Failed to send MP4 file.")
-                finally:
-                    os.remove(filepath)  
+                # Send the video file
+                if os.path.isfile(filepath):
+                    try:
+                        with open(filepath, 'rb') as video_file:
+                            await context.bot.send_video(chat_id=query.message.chat_id, video=video_file)
+                        await query.edit_message_text(f"{menu['download_success']}", reply_markup=success_start())
+                    except Exception as e:
+                        print(f"Error sending MP4 file: {e}")
+                        await query.edit_message_text("Failed to send MP4 file.")
+                    finally:
+                        os.remove(filepath)  # Clean up the file
+                else:
+                    await query.edit_message_text("File does not exist or download failed.")
             else:
                 await query.edit_message_text("Failed to download the video.")
-            
+
             user_state[user_id] = None
             user_youtube_urls.pop(user_id, None)
 
         else:
-            await query.edit_message_text("No YouTube URL received.")
-
+            await query.edit_message_text(f"{menu['no_youtube_url']}")
 
 
 
