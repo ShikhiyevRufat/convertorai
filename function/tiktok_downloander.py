@@ -2,7 +2,8 @@ import yt_dlp
 
 def download_tiktok(video_url, output_filename, target_resolution='720p'):
     try:
-        ydl_opts = {'listformats': True}
+        ydl_opts = {'listformats': True,
+                    'timeout': 30,}
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=False)
@@ -24,7 +25,8 @@ def download_tiktok(video_url, output_filename, target_resolution='720p'):
 
         ydl_opts = {
             'format': selected_format,
-            'outtmpl': output_filename
+            'outtmpl': output_filename,
+            'timeout': 30,
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
