@@ -41,4 +41,6 @@ validators==0.34.0
 websockets==13.0.1
 yt-dlp==2024.8.6
 ffmpeg-python==0.2.0
+pyrogram==2.0.106
+rembg==2.0.61
 
