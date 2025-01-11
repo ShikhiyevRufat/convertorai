@@ -16,6 +16,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         [InlineKeyboardButton(menu["generate_qr"], callback_data='generate_qr')],
         [InlineKeyboardButton(menu["tiktok_download"], callback_data='tiktok_download')],
         [InlineKeyboardButton(menu["youtube_download"], callback_data='youtube_download')],
+        [InlineKeyboardButton(menu["font_style"], callback_data='font_style')],
+        [InlineKeyboardButton(menu["bg_remove"], callback_data='bg_remove')],
     ]
 
     markup = InlineKeyboardMarkup(keyboard)

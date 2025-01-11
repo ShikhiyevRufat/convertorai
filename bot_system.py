@@ -1,17 +1,20 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from io import BytesIO
-import os
 from function.image_convertor import convert_image
 from function.document_convertor import document_convertor
 from function.qr_generate import qr_generate
 from function.tiktok_downloander import download_tiktok
-from youtube_downloander import youtube_downloader
+from function.youtube_downloander import download_youtube_or_tiktok_video
 from user_credit import Credit
 from utilities.start_func import start as start_func
 from utilities.language_func import language as lang_func
 from utilities.translations import translations
 from utilities.language_func import user_language
+from function.font_style import Fonts
+from pyrogram import Client, filters
+from function.bg_remover import process_image
+import os
 import re
 
 user_state = {}
@@ -33,6 +36,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     if query.data == 'convert_image':
         user_state[query.from_user.id] = 'awaiting_image_upload'
         await query.edit_message_text(f"{menu["please_image_upload"]}")
+    
+    elif query.data == 'bg_remove':
+        user_state[query.from_user.id] = 'bg_remove'
+        await query.edit_message_text(f"{menu["please_image_upload"]}") 
 
     elif query.data == 'convert_document':
         user_state[query.from_user.id] = 'awaiting_document_upload'
@@ -57,6 +64,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         user_state[query.from_user.id] = 'awaiting_youtube_url'
         await query.edit_message_text(f"{menu["please_send_youtube"]}")
 
+    elif query.data == 'font_style':
+        user_state[query.from_user.id] = 'font_style'
+        await query.edit_message_text(f"{menu["pls_write_message"]}")    
+    
+
     elif query.data.startswith('format_'):
         await handle_format_selection(update, context)
     elif query.data.startswith('quality_'):
@@ -65,6 +77,20 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         lang_code = query.data.split('_')[1]
         user_language[query.from_user.id] = lang_code
         await start_func(update, context)
+    elif query.data.startswith('style+'):
+        # Extract style and apply it
+        _, style = query.data.split('+')
+        original_message = user_state.get(query.from_user.id)
+
+        if original_message:
+            styled_message = handle_style(style, original_message)
+            await query.edit_message_text(styled_message)
+            await query.message.reply_text(f"{menu["font_success"]}", reply_markup=success_start(update, context))
+            # Clear the user state after processing
+            del user_state[query.from_user.id]
+        else:
+            await query.edit_message_text("Please write a message first!",)
+
     else:
         await query.edit_message_text("This function is not available.")
 
@@ -107,11 +133,139 @@ def success_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> InlineK
     markup = InlineKeyboardMarkup(keyboard)
     return markup
 
+def sanitize_filename(filepath):
+    directory, filename = os.path.split(filepath)
+    sanitized_filename = re.sub(r'[<>:"/\\|?*]', '', filename).replace(' ', '_')
+    return os.path.join(directory, sanitized_filename)
 
+def generate_buttons():
+    buttons = [[
+        InlineKeyboardButton('𝚃𝚢𝚙𝚎𝚠𝚛𝚒𝚝𝚎𝚛', callback_data='style+typewriter'),
+        InlineKeyboardButton('𝕆𝕦𝕥𝕝𝕚𝕟𝕖', callback_data='style+outline'),
+        InlineKeyboardButton('𝐒𝐞𝐫𝐢𝐟', callback_data='style+serif'),
+        ],[
+        InlineKeyboardButton('𝑺𝒆𝒓𝒊𝒇', callback_data='style+bold_cool'),
+        InlineKeyboardButton('𝑆𝑒𝑟𝑖𝑓', callback_data='style+cool'),
+        InlineKeyboardButton('Sᴍᴀʟʟ Cᴀᴘs', callback_data='style+small_cap'),
+        ],[
+        InlineKeyboardButton('𝓈𝒸𝓇𝒾𝓅𝓉', callback_data='style+script'),
+        InlineKeyboardButton('𝓼𝓬𝓻𝓲𝓹𝓽', callback_data='style+script_bolt'),
+        InlineKeyboardButton('ᵗⁱⁿʸ', callback_data='style+tiny'),
+        ],[
+        InlineKeyboardButton('ᑕOᗰIᑕ', callback_data='style+comic'),
+        InlineKeyboardButton('𝗦𝗮𝗻𝘀', callback_data='style+sans'),
+        InlineKeyboardButton('𝙎𝙖𝙣𝙨', callback_data='style+slant_sans'),
+        ],[
+        InlineKeyboardButton('𝘚𝘢𝘯𝘴', callback_data='style+slant'),
+        InlineKeyboardButton('𝖲𝖺𝗇𝗌', callback_data='style+sim'),
+         InlineKeyboardButton('Ⓒ︎Ⓘ︎Ⓡ︎Ⓒ︎Ⓛ︎Ⓔ︎Ⓢ︎', callback_data='style+circles'),
+        ],[
+        InlineKeyboardButton('🅒︎🅘︎🅡︎🅒︎🅛︎🅔︎🅢︎', callback_data='style+circle_dark'),
+        InlineKeyboardButton('𝔊𝔬𝔱𝔥𝔦𝔠', callback_data='style+gothic'),
+        InlineKeyboardButton('𝕲𝖔𝖙𝖍𝖎𝖈', callback_data='style+gothic_bolt'),
+        ],[
+        InlineKeyboardButton('C͜͡l͜͡o͜͡u͜͡d͜͡s͜͡', callback_data='style+cloud'),
+        InlineKeyboardButton('H̆̈ă̈p̆̈p̆̈y̆̈', callback_data='style+happy'),
+        InlineKeyboardButton('S̑̈ȃ̈d̑̈', callback_data='style+sad'),
+        ],[
+            InlineKeyboardButton('🇸 🇵 🇪 🇨 🇮 🇦 🇱 ', callback_data='style+special'),
+            InlineKeyboardButton('🅂🅀🅄🄰🅁🄴🅂', callback_data='style+squares'),
+            InlineKeyboardButton('🆂︎🆀︎🆄︎🅰︎🆁︎🅴︎🆂︎', callback_data='style+squares_bold'),
+            ],[
+            InlineKeyboardButton('ꪖꪀᦔꪖꪶꪊᥴ𝓲ꪖ', callback_data='style+andalucia'),
+            InlineKeyboardButton('爪卂几ᘜ卂', callback_data='style+manga'),
+            InlineKeyboardButton('S̾t̾i̾n̾k̾y̾', callback_data='style+stinky'),
+            ],[
+            InlineKeyboardButton('B̥ͦu̥ͦb̥ͦb̥ͦl̥ͦe̥ͦs̥ͦ', callback_data='style+bubbles'),
+            InlineKeyboardButton('U͟n͟d͟e͟r͟l͟i͟n͟e͟', callback_data='style+underline'),
+            InlineKeyboardButton('꒒ꍏꀷꌩꌃꀎꁅ', callback_data='style+ladybug'),
+            ],[
+            InlineKeyboardButton('R҉a҉y҉s҉', callback_data='style+rays'),
+            InlineKeyboardButton('B҈i҈r҈d҈s҈', callback_data='style+birds'),
+            InlineKeyboardButton('S̸l̸a̸s̸h̸', callback_data='style+slash'),
+            ],[
+            InlineKeyboardButton('s⃠t⃠o⃠p⃠', callback_data='style+stop'),
+            InlineKeyboardButton('S̺͆k̺͆y̺͆l̺͆i̺͆n̺͆e̺͆', callback_data='style+skyline'),
+            InlineKeyboardButton('A͎r͎r͎o͎w͎s͎', callback_data='style+arrows'),
+            ],[
+            InlineKeyboardButton('ዪሀክቿነ', callback_data='style+qvnes'),
+            InlineKeyboardButton('S̶t̶r̶i̶k̶e̶', callback_data='style+strike'),
+            InlineKeyboardButton('F༙r༙o༙z༙e༙n༙', callback_data='style+frozen')
+            ]]
+    return InlineKeyboardMarkup(buttons)
+
+def handle_style(style, text):
+    style_map = {
+    'typewriter': Fonts.typewriter,
+    'outline': Fonts.outline,
+    'serif': Fonts.serief,
+    'bold_cool': Fonts.bold_cool,
+    'cool': Fonts.cool,
+    'small_cap': Fonts.smallcap,
+    'script': Fonts.script,
+    'script_bolt': Fonts.bold_script,
+    'tiny': Fonts.tiny,
+    'comic': Fonts.comic,
+    'sans': Fonts.san,
+    'slant_sans': Fonts.slant_san,
+    'slant': Fonts.slant,
+    'sim': Fonts.sim,
+    'circles': Fonts.circles,
+    'circle_dark': Fonts.dark_circle,
+    'gothic': Fonts.gothic,
+    'gothic_bolt': Fonts.bold_gothic,
+    'cloud': Fonts.cloud,
+    'happy': Fonts.happy,
+    'sad': Fonts.sad,
+    'special': Fonts.special,
+    'squares': Fonts.square,
+    'squares_bold': Fonts.dark_square,
+    'andalucia': Fonts.andalucia,
+    'manga': Fonts.manga,
+    'stinky': Fonts.stinky,
+    'bubbles': Fonts.bubbles,
+    'underline': Fonts.underline,
+    'ladybug': Fonts.ladybug,
+    'rays': Fonts.rays,
+    'birds': Fonts.birds,
+    'slash': Fonts.slash,
+    'stop': Fonts.stop,
+    'skyline': Fonts.skyline,
+    'arrows': Fonts.arrows,
+    'qvnes': Fonts.rvnes,
+    'strike': Fonts.strike,
+    'frozen': Fonts.frozen,
+}
+    cls = style_map.get(style)
+    return cls(text) if cls else text
+
+@Client.on_callback_query(filters.regex('^style'))
+async def apply_style(client, callback_query):
+    user_id = callback_query.from_user.id
+    if user_id not in user_state:
+        await callback_query.answer("Please send a message first!", show_alert=True)
+        return
+
+    # Extract the chosen style
+    _, style = callback_query.data.split('+')
+    original_message = user_state[user_id]
+
+    # Apply the chosen style to the message
+    styled_message = handle_style(style, original_message)
+
+    # Send the styled message
+    await callback_query.message.edit_text(
+        styled_message,
+        reply_markup=callback_query.message.reply_markup
+    )
+
+    # Optionally, clear the stored message after processing
+    del user_state[user_id]
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user_id = update.message.from_user.id
+    user_id = update.message.from_user.id 
     lang = user_language.get(user_id, "en")
+    query = update.callback_query
 
     menu = translations[lang]
 
@@ -122,6 +276,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     if user_state.get(user_id) == 'starts':
         await start_func(update, context)
+    
+    if user_state.get(user_id) == 'font_style':
+        if update.message:  
+            user_state[user_id] = update.message.text  
+            await update.message.reply_text(
+                "Choose your style, please:",
+                reply_markup=generate_buttons()
+            )
+        else:
+            await update.message.reply_text("Please send a valid message first.")
 
     if user_state.get(user_id) == 'awaiting_tiktok_url':
         url = update.message.text
@@ -150,6 +314,20 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         except Exception as e:
             await update.message.reply_text(f"{menu["error_qr"]}",reply_markup=success_start(update, context))
 
+    elif user_state.get(user_id) == 'bg_remove':
+        if update.message.photo:
+            photo_file = await update.message.photo[-1].get_file()
+            photo = await photo_file.download_as_bytearray()
+
+            try:
+                output_buffer = process_image(photo)
+
+                await update.message.reply_document(document=output_buffer, caption=f"{menu["download_success"]}", filename="output_image.png", reply_markup=success_start(update, context))
+
+            except Exception as e:
+                await update.message.reply_text(f"{menu["error_image"]}")
+        else:
+            await update.message.reply_text(f"{menu["error_upload_image"]}")
 
     elif user_state.get(user_id) == 'awaiting_image_upload':
         if update.message.photo:
@@ -234,10 +412,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             [InlineKeyboardButton("📹MP4 - 1080p", callback_data='quality_1080')],
         ]
         markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text(
-            f"{menu["select_format_quality"]}",
-            reply_markup=markup
-        )
+        await update.message.reply_text(f"{menu['select_format_quality']}", reply_markup=markup)
+
+        # Update state
         user_state[user_id] = 'awaiting_youtube_selection'
 
 def is_file_non_empty(filepath):
@@ -256,7 +433,9 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
         if url:
             await query.edit_message_text(f"{menu["please_wait_mp3"]}")
 
-            filepath = youtube_downloader(url, 'mp3')
+            filepath = download_youtube_or_tiktok_video(url, 'mp3')
+            print(filepath)
+            
             if filepath and is_file_non_empty(filepath):
                 try:
                     with open(filepath, 'rb') as file:
@@ -276,7 +455,7 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
             await query.edit_message_text(f"{menu["no_youtube_url"]}",reply_markup=success_start(update, context))
 
         user_state[user_id] = None
-        user_images.pop(user_id, None)
+
 
     elif user_state.get(user_id) == 'awaiting_format_selection' and user_id in user_images:
         await query.edit_message_text(f"{menu["please_wait_image"]}")
@@ -300,12 +479,6 @@ async def handle_format_selection(update: Update, context: ContextTypes.DEFAULT_
     else:
         await query.edit_message_text(f"{menu["no_youtube_url"]}",reply_markup=success_start(update, context))
 
-def sanitize_filename(filepath):
-    directory, filename = os.path.split(filepath)
-    sanitized_filename = re.sub(r'[<>:"/\\?*]', '', filename).replace(' ', '_')
-    return os.path.join(directory, sanitized_filename)
-
-
 async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
@@ -325,10 +498,11 @@ async def handle_quality_selection(update: Update, context: ContextTypes.DEFAULT
 
         if query.data.startswith('quality_'):
             resolution = query.data.split('_')[1]
+            format_choice = f'mp4_{resolution}'
 
             await query.edit_message_text(f"{menu['please_wait_mp4']}")
 
-            filepath = youtube_downloader(url, 'mp4', resolution)
+            filepath = download_youtube_or_tiktok_video(url, format_choice)
             if filepath:
                 print(f"Original file path from downloader: {filepath}")
 

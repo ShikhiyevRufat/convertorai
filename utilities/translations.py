@@ -6,7 +6,7 @@ translations = {
             "generate_qr": "📲 QR Kod Yaradın",
             "tiktok_download": "🎵 TikTok Videosunu Yükləyin",
             "youtube_download": "📷 YouTube MP3 və ya MP4 Yükləmə",
-            "please_image_upload": "Xahiş edirik, çevirmək istədiyiniz şəkli yükləyin 🖼️",
+            "please_image_upload": "Xahiş edirik, şəkil yükləyin 🖼️",
             "please_document_upload": "Xahiş edirik, PDF-ə çevirmək istədiyiniz sənədi yükləyin 📄",
             "please_enter_qr": "QR kod üçün mətn və ya URL daxil edin 📲",
             "please_send_tiktok": "TikTok video URL-sini göndərin 🎥",
@@ -33,9 +33,13 @@ translations = {
             "error_format_document": "Təqdim olunan faylda problem yarandı.\n 📃Bu funksiya yalnız aşağıdakı fayl növlərinin çevrilməsini dəstəkləyir: DOCX, DOC, XLSX, XLS, PPTX, PPT və HTML. Zəhmət olmasa uyğun bir fayl yükləyin.",
             "error_document": "Sənəd yüklənərkən xəta baş verdi.\n📧 Bu problemi həll etmək üçün bizimlə əlaqə saxlaya bilərsiniz: rufatshikhiyev@gmail.com",
             "error_convert_music": "Musiqi çevrilərkən xəta baş verdi.\n📧 Bu problemi həll etmək üçün bizimlə əlaqə saxlaya bilərsiniz: rufatshikhiyev@gmail.com",
-            "error_youtube_url": "❌Bu, etibarlı bir YouTube URL-si deyil. Zəhmət olmasa, yalnız bir YouTube URL-si daxil etdiyinizdən əmin olun.",
+            "error_youtube_url": "❌ Bu, etibarlı bir YouTube URL-si deyil. Zəhmət olmasa, yalnız bir YouTube URL-si daxil etdiyinizdən əmin olun.",
             "error_convert_video": "Video çevrilərkən xəta baş verdi.\n📧 Bu problemi həll etmək üçün bizimlə əlaqə saxlaya bilərsiniz: rufatshikhiyev@gmail.com",
-            "error_music_retry": "Yüklənərkən xəta baş verdi. Zəhmət olmasa bir neçə dəqiqə sonra yenidən cəhd edin⏰"
+            "error_music_retry": "Yüklənərkən xəta baş verdi. Zəhmət olmasa bir neçə dəqiqə sonra yenidən cəhd edin⏰",
+            "font_style": "🖌 Mənt fontunu dəyiş",
+            "pls_write_message": "Zəhmət olmasa mətni qeyd edin (Sadəcə İngilis dili hərflərini dəstəkləyir)🖋",
+            "font_success": "🥳 Mətn fontu uğurla dəyişdirildi!",
+            "bg_remove": "🖼️ Şəkilin arxa fonunu təmizləyin"
         },
         "en": {
             "welcome": "👋 Welcome!\n🌟 Choose the feature you want to use and enjoy!\n☕ Support us here: [Buy me a coffee](https://buymeacoffee.com/rufatshikhiyev)",
@@ -44,7 +48,7 @@ translations = {
             "generate_qr": "📲 Generate QR Code",
             "tiktok_download": "🎵 Tiktok Reel Download",
             "youtube_download": "📷 YouTube MP3 or MP4 Download",
-            "please_image_upload": "Please upload the image you want to convert🖼️",
+            "please_image_upload": "Please upload the image🖼️",
             "please_document_upload": "Please upload the document you want to convert to PDF📄",
             "please_enter_qr": "Please enter the text or URL for the QR code📲",
             "please_send_tiktok": "Please send me the TikTok video URL🎥",
@@ -52,7 +56,7 @@ translations = {
             "start": "Start",
             "language": "Language",
             "tiktok_download_video": "Downloading TikTok video...",
-            "download_success": "🥳Download successful!",
+            "download_success": "🥳 Download successfuly!",
             "choose_image_format": "Which format do you want to convert the image to?",
             "error_upload_image": "Please upload an image!",
             "converting_document": "Converting your document to PDF. Please wait...",
@@ -71,9 +75,13 @@ translations = {
             "error_format_document": "An issue occurred with the provided file.\n 📃This feature supports the conversion of only the following file types: DOCX, DOC, XLSX, XLS, PPTX, PPT, and HTML. Please upload a compatible file.",
             "error_document": "An error occurred while uploading the document.\n📧 You can contact us to resolve this issue: rufatshikhiyev@gmail.com",
             "error_convert_music": "An error occurred while converting the music.\n📧 You can contact us to resolve this issue: rufatshikhiyev@gmail.com",
-            "error_youtube_url": "❌This is not a valid YouTube URL. Please ensure that you enter only a YouTube URL.",
+            "error_youtube_url": "❌ This is not a valid YouTube URL. Please ensure that you enter only a YouTube URL.",
             "error_convert_video": "An error occurred while converting the music.\n📧 You can contact us to resolve this issue: rufatshikhiyev@gmail.com",
-            "error_music_retry": "The download failed. Please try again in a few minutes⏰"
+            "error_music_retry": "The download failed. Please try again in a few minutes⏰",
+            "font_style": "✒ Change font style",
+            "pls_write_message": "Please write your message (Only English fonts are supported)🖋",
+            "font_success": "🥳 Text font changed successfuly!",
+            "bg_remove": "🖼️ Remove image background"
         },
         "ru": {
             "welcome": "👋 Добро пожаловать!\n🌟 Выберите функцию, которую хотите использовать, и наслаждайтесь!\n☕ Поддержите нас здесь: [Buy me a coffee](https://buymeacoffee.com/rufatshikhiyev)",
@@ -82,7 +90,7 @@ translations = {
             "generate_qr": "📲 Генерировать QR код",
             "tiktok_download": "🎵 Загрузка видео с TikTok",
             "youtube_download": "📷 Загрузка YouTube MP3 или MP4",
-            "please_image_upload": "Пожалуйста, загрузите изображение для конвертации 🖼️",
+            "please_image_upload": "Пожалуйста, загрузите изображение 🖼️",
             "please_document_upload": "Пожалуйста, загрузите документ для конвертации в PDF 📄",
             "please_enter_qr": "Пожалуйста, введите текст или URL для QR кода 📲",
             "please_send_tiktok": "Пожалуйста, отправьте URL видео с TikTok 🎥",
@@ -109,8 +117,12 @@ translations = {
             "error_format_document": "Произошла ошибка с предоставленным файлом.\n 📃Эта функция поддерживает конвертацию только следующих типов файлов: DOCX, DOC, XLSX, XLS, PPTX, PPT и HTML. Пожалуйста, загрузите совместимый файл.",
             "error_document": "Произошла ошибка при загрузке документа.\n📧 Вы можете связаться с нами, чтобы решить эту проблему: rufatshikhiyev@gmail.com",
             "error_convert_music": "Произошла ошибка при конвертации музыки.\n📧 Вы можете связаться с нами, чтобы решить эту проблему: rufatshikhiyev@gmail.com",
-            "error_youtube_url": "❌Это не действительный URL YouTube. Пожалуйста, убедитесь, что вы ввели только URL YouTube.",
+            "error_youtube_url": "❌ Это не действительный URL YouTube. Пожалуйста, убедитесь, что вы ввели только URL YouTube.",
             "error_convert_video": "Произошла ошибка при конвертации видео.\n📧 Вы можете связаться с нами, чтобы решить эту проблему: rufatshikhiyev@gmail.com",
-            "error_music_retry": "Загрузка не удалась. Пожалуйста, попробуйте еще раз через несколько минут⏰"
+            "error_music_retry": "Загрузка не удалась. Пожалуйста, попробуйте еще раз через несколько минут⏰",
+            "font_style": "✒ Изменить стиль шрифта",
+            "pls_write_message": "Пожалуйста, напишите свое сообщение (Просто поддерживает буквы английского языка)🖋",
+            "font_success": "🥳 Текстовый шрифт изменил успешный!",
+            "bg_remove": "🖼️ Удалить фон изображения"
         },
     }
