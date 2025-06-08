@@ -33,10 +33,10 @@
 <p>This project simplifies complex workflows while engaging users effectively. The core features include:</p>
 <ul class="list-disc pl-4 my-0">
 <li class="my-0">🎨 <strong>Multi-functional Bot:</strong> Seamlessly manage tasks like image conversion and media downloads within Telegram.</li>
-<li class="my-0">💳 <strong>User Credit Management:</strong> Track and allocate user credits to enhance engagement and facilitate transactions.</li>
 <li class="my-0">🌍 <strong>Multilingual Support:</strong> Interact in your preferred language with built-in translations for a broader audience reach.</li>
 <li class="my-0">📥 <strong>Robust Media Handling:</strong> Download content from platforms like YouTube and TikTok, along with versatile document conversions.</li>
 <li class="my-0">🖼️ <strong>Background Removal:</strong> Enhance images effortlessly with advanced processing capabilities.</li>
+<li class="my-0">📱 <strong>QR Code Generation:</strong> Generate QR code with messages or links</li>
 <li class="my-0">⚡ <strong>Command-line Autocompletion:</strong> Boost productivity with intuitive command suggestions for efficient tool usage.</li>
 </ul>
 <hr>
