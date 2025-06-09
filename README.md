@@ -1,82 +1,82 @@
-<div id="top" class="">
+<div id="top" style="font-family:'Orbitron',sans-serif;letter-spacing:1.5px;">
 
-<div align="center" class="text-center">
-<h1>CONVERTORAI</h1>
-<p><em>Transforming media effortlessly, enhancing your digital experience.</em></p>
+<div align="center" style="text-align:center;">
+<h1 style="font-size:3em;letter-spacing:0.15em;background: linear-gradient(90deg,#00d2ff,#3a47d5);-webkit-background-clip: text;-webkit-text-fill-color: transparent;">🚀 CONVERTORAI</h1>
+<p><em style="font-size:1.25em;">Revolutionizing media transformation for a hyper-connected future.</em></p>
 
-<img alt="last-commit" src="https://img.shields.io/github/last-commit/ShikhiyevRufat/convertorai?style=flat&amp;logo=git&amp;logoColor=white&amp;color=0080ff" class="inline-block mx-1" style="margin: 0px 2px;">
-<img alt="repo-top-language" src="https://img.shields.io/github/languages/top/ShikhiyevRufat/convertorai?style=flat&amp;color=0080ff" class="inline-block mx-1" style="margin: 0px 2px;">
-<img alt="repo-language-count" src="https://img.shields.io/github/languages/count/ShikhiyevRufat/convertorai?style=flat&amp;color=0080ff" class="inline-block mx-1" style="margin: 0px 2px;">
-<p><em>Built with the tools and technologies:</em></p>
-<img alt="JSON" src="https://img.shields.io/badge/JSON-000000.svg?style=flat&amp;logo=JSON&amp;logoColor=white" class="inline-block mx-1" style="margin: 0px 2px;">
-<img alt="Telegraph" src="https://img.shields.io/badge/Telegraph-FAFAFA.svg?style=flat&amp;logo=Telegraph&amp;logoColor=black" class="inline-block mx-1" style="margin: 0px 2px;">
-<img alt="Python" src="https://img.shields.io/badge/Python-3776AB.svg?style=flat&amp;logo=Python&amp;logoColor=white" class="inline-block mx-1" style="margin: 0px 2px;">
+<img alt="last-commit" src="https://img.shields.io/github/last-commit/ShikhiyevRufat/convertorai?style=flat&logo=git&logoColor=white&color=0ff2c3" class="inline-block mx-1" style="margin: 4px;">
+<img alt="repo-top-language" src="https://img.shields.io/github/languages/top/ShikhiyevRufat/convertorai?style=flat&color=0ff2c3" class="inline-block mx-1" style="margin: 4px;">
+<img alt="repo-language-count" src="https://img.shields.io/github/languages/count/ShikhiyevRufat/convertorai?style=flat&color=0ff2c3" class="inline-block mx-1" style="margin: 4px;">
+<p><em>Powered by futuristic technologies:</em></p>
+<img alt="JSON" src="https://img.shields.io/badge/JSON-232526.svg?style=flat&logo=JSON&logoColor=white" class="inline-block mx-1" style="margin: 4px;">
+<img alt="Telegraph" src="https://img.shields.io/badge/Telegraph-232526.svg?style=flat&logo=Telegraph&logoColor=white" class="inline-block mx-1" style="margin: 4px;">
+<img alt="Python" src="https://img.shields.io/badge/Python-00d2ff.svg?style=flat&logo=Python&logoColor=white" class="inline-block mx-1" style="margin: 4px;">
+<img alt="AI" src="https://img.shields.io/badge/AI-Powered-3a47d5.svg?style=flat&logo=OpenAI&logoColor=white" class="inline-block mx-1" style="margin: 4px;">
 </div>
 <br>
-<hr>
-<h2>Table of Contents</h2>
-<ul class="list-disc pl-4 my-0">
-<li class="my-0"><a href="#overview">Overview</a></li>
-<li class="my-0"><a href="#getting-started">Getting Started</a>
-<ul class="list-disc pl-4 my-0">
-<li class="my-0"><a href="#prerequisites">Prerequisites</a></li>
-<li class="my-0"><a href="#installation">Installation</a></li>
-<li class="my-0"><a href="#usage">Usage</a></li>
-<li class="my-0"><a href="#testing">Testing</a></li>
-</ul>
+<hr style="border-top:2px solid #00d2ff;">
+<h2 style="color:#00d2ff;">🧭 Table of Contents</h2>
+<ul style="list-style-type: '⟁ ';padding-left:1.5em;">
+<li><a href="#overview">Overview</a></li>
+<li><a href="#getting-started">Getting Started</a>
+  <ul>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#testing">Testing</a></li>
+  </ul>
 </li>
 </ul>
-<hr>
-<h2>Overview</h2>
-<p>ConvertorAI is a powerful developer tool designed to enhance user interactions through a multi-functional Telegram bot, streamlining tasks like media downloading and conversion.</p>
-<p><strong>Why ConvertorAI?</strong></p>
-<p>This project simplifies complex workflows while engaging users effectively. The core features include:</p>
-<ul class="list-disc pl-4 my-0">
-<li class="my-0">🎨 <strong>Multi-functional Bot:</strong> Seamlessly manage tasks like image conversion and media downloads within Telegram.</li>
-<li class="my-0">🌍 <strong>Multilingual Support:</strong> Interact in your preferred language with built-in translations for a broader audience reach.</li>
-<li class="my-0">📥 <strong>Robust Media Handling:</strong> Download content from platforms like YouTube and TikTok, along with versatile document conversions.</li>
-<li class="my-0">🖼️ <strong>Background Removal:</strong> Enhance images effortlessly with advanced processing capabilities.</li>
-<li class="my-0">📱 <strong>QR Code Generation:</strong> Generate QR code with messages or links</li>
-<li class="my-0">⚡ <strong>Command-line Autocompletion:</strong> Boost productivity with intuitive command suggestions for efficient tool usage.</li>
+<hr style="border-top:2px solid #00d2ff;">
+<h2 id="overview" style="color:#00d2ff;">🌌 Overview</h2>
+<p>
+<b>ConvertorAI</b> is your next-gen Telegram bot for seamless media manipulation, conversion, and digital enhancement. Designed for tomorrow's workflows, it delivers ultra-smooth user experiences in a sleek, AI-powered package.
+</p>
+<p><strong>Why Choose ConvertorAI?</strong></p>
+<ul style="list-style-type: '🛸 ';padding-left:1.5em;">
+<li><b>Multi-functional Bot:</b> <span style="color:#00d2ff;">All-in-one command center for image conversions, media downloads, and more—right inside Telegram.</span></li>
+<li><b>Multilingual Intelligence:</b> <span style="color:#3a47d5;">Interact in any language, breaking global barriers with instant translations.</span></li>
+<li><b>Advanced Media Handling:</b> <span style="color:#0ff2c3;">Download from YouTube, TikTok, and convert documents with futuristic ease.</span></li>
+<li><b>AI-Powered Image Processing:</b> <span style="color:#00d2ff;">Remove backgrounds, enhance visuals, and elevate your content with cutting-edge algorithms.</span></li>
+<li><b>QR Code Creation:</b> <span style="color:#3a47d5;">Generate smart QR codes for messages, links, or futuristic networking.</span></li>
+<li><b>Smart Autocompletion:</b> <span style="color:#0ff2c3;">Command-line suggestions turbocharge your workflow with AI-driven insights.</span></li>
 </ul>
-<hr>
-<h2>Getting Started</h2>
-<h3>Prerequisites</h3>
-<p>This project requires the following dependencies:</p>
-<ul class="list-disc pl-4 my-0">
-<li class="my-0"><strong>Programming Language:</strong> Python</li>
-<li class="my-0"><strong>Package Manager:</strong> Pip</li>
+<hr style="border-top:2px solid #00d2ff;">
+<h2 id="getting-started" style="color:#00d2ff;">⚡ Getting Started</h2>
+<h3 id="prerequisites" style="color:#3a47d5;">Prerequisites</h3>
+<p>
+<b>Core Technologies:</b>
+</p>
+<ul>
+  <li><b>Language:</b> Python 3.10+</li>
+  <li><b>Package Manager:</b> Pip (latest recommended)</li>
 </ul>
-<h3>Installation</h3>
-<p>Build convertorai from the source and intsall dependencies:</p>
+<h3 id="installation" style="color:#3a47d5;">Installation</h3>
+<p>Clone, build, and experience the future:</p>
 <ol>
-<li class="my-0">
-<p><strong>Clone the repository:</strong></p>
-<pre><code class="language-sh">❯ git clone https://github.com/ShikhiyevRufat/convertorai
-</code></pre>
+<li>
+<p><b>Clone the repository:</b></p>
+<pre><code class="language-sh">git clone https://github.com/ShikhiyevRufat/convertorai</code></pre>
 </li>
-<li class="my-0">
-<p><strong>Navigate to the project directory:</strong></p>
-<pre><code class="language-sh">❯ cd convertorai
-</code></pre>
+<li>
+<p><b>Navigate to your digital workspace:</b></p>
+<pre><code class="language-sh">cd convertorai</code></pre>
 </li>
-<li class="my-0">
-<p><strong>Install the dependencies:</strong></p>
+<li>
+<p><b>Install all dependencies (AI and more):</b></p>
+<pre><code class="language-sh">pip install -r requirements.txt</code></pre>
 </li>
 </ol>
-<p><strong>Using <a href="https://pypi.org/project/pip/">pip</a>:</strong></p>
-<pre><code class="language-sh">❯ pip install -r requirements.txt
-</code></pre>
-<h3>Usage</h3>
-<p>Run the project with:</p>
-<p><strong>Using <a href="https://pypi.org/project/pip/">pip</a>:</strong></p>
-<pre><code class="language-sh">python main.py
-</code></pre>
-<h3>Testing</h3>
-<p>Convertorai uses the {<strong>test_framework</strong>} test framework. Run the test suite with:</p>
-<p><strong>Using <a href="https://pypi.org/project/pip/">pip</a>:</strong></p>
-<pre><code class="language-sh">pytest
-</code></pre>
-<hr>
-<div align="left" class=""><a href="#top">⬆ Return</a></div>
-<hr></div>
+
+<h3 id="usage" style="color:#3a47d5;">Usage</h3>
+<p>Unleash ConvertorAI with a single command:</p>
+<pre><code class="language-sh">python main.py</code></pre>
+
+<h3 id="testing" style="color:#3a47d5;">Testing</h3>
+<p>Stability for the future—run the test suite:</p>
+<pre><code class="language-sh">pytest</code></pre>
+<hr style="border-top:2px solid #00d2ff;">
+
+<div align="left"><a href="#top" style="color:#00d2ff;">⬆ Return to Top</a></div>
+<hr style="border-top:2px solid #00d2ff;">
+</div>
