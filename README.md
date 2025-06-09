@@ -1,4 +1,4 @@
-# 🚀 ConvertorAI
+# 🌌 Overview
 
 ConvertorAI is your next-gen Telegram bot for seamless media manipulation, conversion, and digital enhancement. Designed for tomorrow's workflows, it delivers ultra-smooth user experiences in a sleek, AI-powered package.
 
@@ -34,10 +34,6 @@ ConvertorAI is your next-gen Telegram bot for seamless media manipulation, conve
 </li>
 </ul>
 <hr style="border-top:2px solid #00d2ff;">
-<h2 id="overview" style="color:#00d2ff;">🌌 Overview</h2>
-<p>
-<b>ConvertorAI</b> is your next-gen Telegram bot for seamless media manipulation, conversion, and digital enhancement. Designed for tomorrow's workflows, it delivers ultra-smooth user experiences in a sleek, AI-powered package.
-</p>
 <p><strong>Why Choose ConvertorAI?</strong></p>
 <ul style="list-style-type: '🛸 ';padding-left:1.5em;">
 <li><b>Multi-functional Bot:</b> <span style="color:#00d2ff;">All-in-one command center for image conversions, media downloads, and more—right inside Telegram.</span></li>
